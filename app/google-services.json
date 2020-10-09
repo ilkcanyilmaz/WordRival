@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "846135763365",
+    "firebase_url": "https://word-rival.firebaseio.com",
+    "project_id": "word-rival",
+    "storage_bucket": "word-rival.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:846135763365:android:3a5da5b82d322e732a884c",
+        "android_client_info": {
+          "package_name": "com.ilkcanyilmaz.wordrival"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "846135763365-u8olfj8ersf7nd2a6jq1ir25pb23b27q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ilkcanyilmaz.wordrival",
+            "certificate_hash": "cf82b53594cb332cc1f8bd007a7c12c67bb40227"
+          }
+        },
+        {
+          "client_id": "846135763365-0tf9qe7652v197s3rvg968vrlvtg7h0m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDumMGE_h7_ndxeKCItnp39xW9FFS8bc_c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "846135763365-0tf9qe7652v197s3rvg968vrlvtg7h0m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

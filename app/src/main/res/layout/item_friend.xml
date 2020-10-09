@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="data"
+            type="com.ilkcanyilmaz.wordrival.models.Friend" />
+    </data>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="@dimen/_98sdp"
+        android:layout_height="@dimen/_120sdp"
+        app:cardCornerRadius="@dimen/_12sdp"
+        app:elevation="@dimen/_4sdp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/_8sdp">
+
+            <FrameLayout
+                android:id="@+id/img_background"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_58sdp">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_40sdp"
+                    android:background="@drawable/shape_half_circle_friend_item"
+                    android:contentDescription="TODO" />
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="@dimen/_40sdp"
+                    android:layout_height="@dimen/_40sdp"
+                    android:layout_gravity="bottom|center_horizontal"
+                    app:cardCornerRadius="250dp"
+                    app:layout_anchor="@id/img_background"
+                    app:layout_anchorGravity="bottom|center">
+
+                    <ImageView
+                        android:id="@+id/img_profilePhoto"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:downloadUrl="@{data.friendPhotoUrl}"
+                        android:src="@drawable/ic_account" />
+
+                </androidx.cardview.widget.CardView>
+            </FrameLayout>
+
+
+            <TextView
+                android:id="@+id/txt_friendName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_2sdp"
+                android:gravity="center"
+                android:hint="İlkcan Yılmaz"
+                android:text="@{data.friendNickName}"
+                android:textColor="#1E1E1E"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+
+            <LinearLayout
+                android:id="@+id/ll_friendRequest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:gravity="bottom|center_horizontal"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <ImageButton
+                    android:id="@+id/btn_cancel"
+                    android:layout_width="@dimen/_24sdp"
+                    android:layout_height="@dimen/_24sdp"
+                    android:background="@drawable/ic_cancel"
+                    android:contentDescription="cancel_friendRequest"
+                    android:scaleType="centerCrop" />
+
+                <ImageButton
+                    android:id="@+id/btn_accept"
+                    android:layout_width="@dimen/_24sdp"
+                    android:layout_height="@dimen/_24sdp"
+                    android:layout_marginStart="@dimen/_8sdp"
+                    android:background="@drawable/ic_checked"
+                    android:contentDescription="accept_friendRequest"
+                    android:scaleType="centerCrop" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+</layout>

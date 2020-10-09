@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/wordFragment">
+
+    <fragment
+        android:id="@+id/wordFragment"
+        android:name="com.ilkcanyilmaz.wordrival.views.WordFragment"
+        android:label="WordFragment"
+        tools:layout="@layout/fragment_word">
+        <action
+            android:id="@+id/action_wordFragment_to_gameFragment"
+            app:destination="@id/gameFragment" />
+        <action
+            android:id="@+id/action_wordFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/gameFragment"
+        android:name="com.ilkcanyilmaz.wordrival.views.HomeFragment"
+        android:label="fragment_game"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_gameFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_gameFragment_to_wordFragment2"
+            app:destination="@id/wordFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.ilkcanyilmaz.wordrival.views.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profileFragment_to_wordFragment"
+            app:destination="@id/wordFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_gameFragment"
+            app:destination="@id/gameFragment" />
+    </fragment>
+</navigation>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/_280sdp"
+    android:layout_height="@dimen/_300sdp"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccent"
+        android:gravity="center"
+        android:padding="12dp"
+        android:text="Arkadaş Ekle"
+        android:textColor="@color/color_white" />
+
+    <EditText
+        android:id="@+id/edt_name"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:hint="Kullanıcı Adı" />
+
+    <Button
+        android:id="@+id/btn_friendSearch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Ara" />
+
+    <LinearLayout
+        android:id="@+id/ll_friend"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_60sdp"
+        android:orientation="horizontal"
+        android:background="#FDD835"
+        android:visibility="gone"
+        android:layout_margin="@dimen/_12sdp"
+        android:padding="@dimen/_12sdp">
+
+        <TextView
+            android:id="@+id/txt_userName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="İlkcan Yılmaz" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btn_addFriendRequest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00F4511E"
+            android:text="Ekle"
+            android:textColor="#E53935" />
+    </LinearLayout>
+</LinearLayout>
