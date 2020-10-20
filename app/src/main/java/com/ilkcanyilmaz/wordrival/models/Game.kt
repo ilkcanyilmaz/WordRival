@@ -21,8 +21,6 @@ data class Game(
 )
 
 data class Questions(
-    @Exclude
-    val questionsId: String = "",
     @PropertyName("word")
     val word: String = "",
     @PropertyName("answerTrue")
@@ -33,6 +31,10 @@ data class Questions(
     val answerFalse2: String = "",
     @PropertyName("answerFalse3")
     val answerFalse3: String = "",
-    @PropertyName("status")
-    val status: Int? = 0,
+    @PropertyName("level")
+    val level: Int? = 0,
+    @PropertyName("user1Answer")
+    val user1Answer: Int? = 0,
+    @PropertyName("user2Answer")
+    val user2Answer: Int? = 0,
 )

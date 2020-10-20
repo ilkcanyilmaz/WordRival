@@ -21,8 +21,8 @@ import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import com.ilkcanyilmaz.wordrival.views.MainActivity
 import com.ilkcanyilmaz.wordrival.enums.SendFcmType
+import com.ilkcanyilmaz.wordrival.views.MainActivity
 import org.json.JSONObject
 
 
@@ -103,8 +103,13 @@ class MyFirebaseInstanceIDService : FirebaseMessagingService() {
             val friendNickName = bodyData?.get(2).toString()
             val friendPhotoUrl = bodyData?.get(3).toString()
             mContentText = friendNickName
-
-            firebaseOperatation.AddFriend(friendId, friendNickName, friendToken, friendPhotoUrl)
+            firebaseOperatation.AddFriend(
+                friendId,
+                friendNickName,
+                friendToken,
+                friendPhotoUrl,
+                null
+            )
 
         } else if (title == SendFcmType.FRIEND_REQUEST_RESPONSE.getTypeID().toString()) {
             val bodyData = body?.split(CHAR_SPLIT)
@@ -123,6 +128,14 @@ class MyFirebaseInstanceIDService : FirebaseMessagingService() {
                     //Toast.makeText(activity.applicationContext, "Arkadaşlık isteği gönderildi", Toast.LENGTH_SHORT).show()
                 }
                 .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
+        } else if (title == SendFcmType.FRIEND_REQUEST_GAME.getTypeID().toString()) {
+            mTitle = "Oyun isteği"
+            val bodyData = body?.split(CHAR_SPLIT)
+            val friendId = bodyData?.get(0).toString()
+            val friendNickName = bodyData?.get(1).toString()
+            val gameId = bodyData?.get(2).toString()
+            mContentText = friendNickName
+            firebaseOperatation.AddGameRequestWithFriend(friendId, friendNickName, gameId, null)
         }
         val notificationManager =
             context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager

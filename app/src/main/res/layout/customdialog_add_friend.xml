@@ -1,59 +1,207 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="@dimen/_280sdp"
-    android:layout_height="@dimen/_300sdp"
-    android:orientation="vertical">
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorAccent"
-        android:gravity="center"
-        android:padding="12dp"
-        android:text="Arkadaş Ekle"
-        android:textColor="@color/color_white" />
-
-    <EditText
-        android:id="@+id/edt_name"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:hint="Kullanıcı Adı" />
-
-    <Button
-        android:id="@+id/btn_friendSearch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="Ara" />
+    android:layout_height="@dimen/_360sdp"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="12dp">
 
     <LinearLayout
-        android:id="@+id/ll_friend"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_60sdp"
-        android:orientation="horizontal"
-        android:background="#FDD835"
-        android:visibility="gone"
-        android:layout_margin="@dimen/_12sdp"
-        android:padding="@dimen/_12sdp">
-
-        <TextView
-            android:id="@+id/txt_userName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="İlkcan Yılmaz" />
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
 
         <View
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="1dp"
             android:layout_weight="1" />
 
-        <Button
-            android:id="@+id/btn_addFriendRequest"
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#00F4511E"
-            android:text="Ekle"
-            android:textColor="#E53935" />
+            android:gravity="center"
+            android:text="Arkadaş Ekle"
+            android:textColor="@color/color_text_header"
+            android:textSize="@dimen/_16ssp"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/ic_close" />
     </LinearLayout>
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="12dp"
+        android:background="#575757" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_12sdp"
+
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kullanıcı Adı"
+            android:textColor="#464646"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_marginTop="@dimen/_6sdp"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/edt_name"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:autofillHints="username"
+                android:background="@drawable/shape_edittext_border_accent"
+                android:hint="Kullanıcı Adı"
+                android:paddingHorizontal="12dp" />
+
+
+            <com.ilkcanyilmaz.wordrival.ResizableButton
+                android:id="@+id/btn_friendSearch"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:background="@drawable/shape_search_button_radius"
+                android:src="@drawable/ic_search"
+                android:text="Ara"
+                android:textColor="@color/color_white"
+                app:layout_constraintDimensionRatio="1:1" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txt_warning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/_24sdp"
+        android:text="Kullanıcı Bulunamadı"
+        android:visibility="gone"
+        android:textStyle="bold" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cv_friend"
+        android:layout_width="200dp"
+        android:layout_height="260dp"
+        android:layout_marginTop="24dp"
+        android:visibility="gone"
+        app:cardCornerRadius="@dimen/_12sdp"
+        app:elevation="@dimen/_4sdp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/_8sdp">
+
+            <FrameLayout
+                android:id="@+id/img_background"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_90sdp">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_60sdp"
+                    android:background="@drawable/shape_half_circle_friend_item"
+                    android:contentDescription="TODO" />
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="@dimen/_60sdp"
+                    android:layout_height="@dimen/_60sdp"
+                    android:layout_gravity="bottom|center_horizontal"
+                    app:cardCornerRadius="250dp"
+                    app:layout_anchor="@id/img_background"
+                    app:layout_anchorGravity="bottom|center">
+
+                    <ImageView
+                        android:id="@+id/img_profilePhoto"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_account" />
+
+                </androidx.cardview.widget.CardView>
+            </FrameLayout>
+
+
+            <TextView
+                android:id="@+id/txt_userName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_2sdp"
+                android:gravity="center"
+                android:hint="İlkcan Yılmaz"
+                android:textColor="#1E1E1E"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/btn_addFriendRequest"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/shape_button_radius"
+                android:text="Ekle"
+                android:textColor="@color/color_white" />
+
+            <LinearLayout
+                android:id="@+id/ll_friendRequest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:gravity="bottom|center_horizontal"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <ImageButton
+                    android:id="@+id/btn_cancel"
+                    android:layout_width="@dimen/_24sdp"
+                    android:layout_height="@dimen/_24sdp"
+                    android:background="@drawable/ic_cancel"
+                    android:contentDescription="cancel_friendRequest"
+                    android:scaleType="centerCrop" />
+
+                <ImageButton
+                    android:id="@+id/btn_accept"
+                    android:layout_width="@dimen/_24sdp"
+                    android:layout_height="@dimen/_24sdp"
+                    android:layout_marginStart="@dimen/_8sdp"
+                    android:background="@drawable/ic_checked"
+                    android:contentDescription="accept_friendRequest"
+                    android:scaleType="centerCrop" />
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
 </LinearLayout>

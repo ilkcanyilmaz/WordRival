@@ -8,4 +8,6 @@
     <color name="color_accent2">#F1FAEE</color>
     <color name="color_background">#FAFAFA</color>
     <color name="color_text_header">#202020</color>
+    <color name="color_red">#E53935</color>
+    <color name="color_green">#43A047</color>
 </resources>

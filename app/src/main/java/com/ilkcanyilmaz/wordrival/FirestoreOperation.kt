@@ -15,11 +15,13 @@ import com.ilkcanyilmaz.wordrival.views.MainActivity
 class FirestoreOperation() {
     private var firestore: FirebaseFirestore
     private val TAG = "GoogleActivity"
-    private val userId:String
+    private val userId: String
+
     init {
-        userId=FirebaseAuth.getInstance().currentUser?.uid.toString()
-        firestore=Firebase.firestore
+        userId = FirebaseAuth.getInstance().currentUser?.uid.toString()
+        firestore = Firebase.firestore
     }
+
     fun InsertNewUserFirestore(
         userMail: String,
         userNickName: String,
@@ -48,7 +50,7 @@ class FirestoreOperation() {
                     "userScore" to 0
                 )
                 val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
-                val uId=mAuth.currentUser?.uid.toString()
+                val uId = mAuth.currentUser?.uid.toString()
                 firestore.collection("Users").document(uId)
                     .set(user)
                     .addOnSuccessListener {
@@ -73,7 +75,8 @@ class FirestoreOperation() {
         friendId: String,
         friendNickName: String,
         friendToken: String,
-        friendPhotoUrl: String
+        friendPhotoUrl: String,
+        activity: Activity?
     ) {
         val friend = hashMapOf(
             "friendNickName" to friendNickName,
@@ -85,18 +88,63 @@ class FirestoreOperation() {
             .document(friendId)
             .set(friend)
             .addOnSuccessListener {
-                //Toast.makeText(activity.applicationContext, "Arkadaşlık isteği gönderildi", Toast.LENGTH_SHORT).show()
+                if (activity != null) {
+                    Toast.makeText(activity, "Arkadaşlık isteği gönderildi", Toast.LENGTH_SHORT)
+                        .show()
+                }
             }
-            .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
+            .addOnFailureListener { e ->
+                {
+                Log.w(TAG, "Error writing document", e)
+                Toast.makeText(
+                    activity,
+                    "Bir hata oluştu. (İnternet bağlantınızı kontrol ediniz.)",
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+            }
     }
-
-    fun FriendRequestResponseUpdate(friendId: String, isFriend:Int){
-        firestore.collection("Users").document(userId).collection("Friends")
-            .document(friendId)
-            .update("isFriend", isFriend)
+}
+    fun AddGameRequestWithFriend(
+        friendId: String,
+        friendNickName: String,
+        gameId: String,
+        activity: Activity?
+    ) {
+        val gameRequest = hashMapOf(
+            "friendId" to friendId,
+            "friendNickName" to friendNickName,
+            "gameId" to gameId,
+            "isFriend" to 0
+        )
+        firestore.collection("Users").document(userId).collection("GameRequest")
+            .document("request")
+            .set(gameRequest)
             .addOnSuccessListener {
-                //Toast.makeText(activity.applicationContext, "Arkadaşlık isteği gönderildi", Toast.LENGTH_SHORT).show()
+                if (activity != null) {
+                    Toast.makeText(activity, "Arkadaşlık isteği gönderildi", Toast.LENGTH_SHORT)
+                        .show()
+                }
             }
-            .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
+            .addOnFailureListener { e ->
+                {
+                    Log.w(TAG, "Error writing document", e)
+                    Toast.makeText(
+                        activity,
+                        "Bir hata oluştu. (İnternet bağlantınızı kontrol ediniz.)",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
+            }
     }
+fun FriendRequestResponseUpdate(friendId: String, isFriend: Int) {
+    firestore.collection("Users").document(userId).collection("Friends")
+        .document(friendId)
+        .update("isFriend", isFriend)
+        .addOnSuccessListener {
+            //Toast.makeText(activity.applicationContext, "Arkadaşlık isteği gönderildi", Toast.LENGTH_SHORT).show()
+        }
+        .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
+}
 }

@@ -1,5 +1,6 @@
 package com.ilkcanyilmaz.wordrival.utils
 
+import android.app.Activity
 import android.util.Log
 import com.ilkcanyilmaz.wordrival.FirestoreOperation
 import com.ilkcanyilmaz.wordrival.enums.SendFcmType
@@ -14,7 +15,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 private val BASE_URL = "https://fcm.googleapis.com/fcm/"
 val CHAR_SPLIT = "$!"
 
-fun SendFCM(title: String, body: String, token: String, friend: User?) {
+fun SendFCM(title: String, body: String, token: String, friend: User?, activity: Activity?) {
     var firestoreOperation = FirestoreOperation()
     val retrofit = Retrofit.Builder().baseUrl(BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
@@ -23,7 +24,7 @@ fun SendFCM(title: String, body: String, token: String, friend: User?) {
     header.put("Content-Type", "application/json")
     header.put(
         "Authorization",
-        "key=AAAAILyNFNY:APA91bHA9UnC4nto9r0VL7UzEG7KtyfdSyv3vwLAyDKRmHijYbgu0aDjm5RA95HEDvKep-HpGpdu9Ej8Ta8GxIKOtu4a-lRaR4vaSB9Qa9qJlmZJRgcEGZTEVrdjGUncS0Um644qy26B"
+        "key=AAAAxQGfIaU:APA91bFUgF-IofbAGd1bVnkRYQ3DpDcUCS8l2yQmHQIxuK0Aunj2ikHLASjEP-UHGyLj4tct5btNauyCM_04M5DT26BoOOshU0KDR9lYYANMbFJwuePPJrWjQiA0R_SXvUchVWk489I0"
     )
 
     val data = FCMModel.Data(title, body)
@@ -43,7 +44,8 @@ fun SendFCM(title: String, body: String, token: String, friend: User?) {
                     friend?.userId.toString(),
                     friend?.userNickName.toString(),
                     friend?.userToken.toString(),
-                    friend?.userPhoto.toString()
+                    friend?.userPhoto.toString(),
+                    activity
                 )
             } else if (title == SendFcmType.FRIEND_REQUEST_RESPONSE.getTypeID().toString()) {
                 val bodyData = body.split(CHAR_SPLIT)

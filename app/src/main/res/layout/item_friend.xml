@@ -11,7 +11,7 @@
 
     <androidx.cardview.widget.CardView
         android:layout_width="@dimen/_98sdp"
-        android:layout_height="@dimen/_120sdp"
+        android:layout_height="@dimen/_140sdp"
         app:cardCornerRadius="@dimen/_12sdp"
         app:elevation="@dimen/_4sdp">
 
@@ -64,6 +64,11 @@
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
+            <Button
+                android:id="@+id/btn_play"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Oyna" />
 
             <LinearLayout
                 android:id="@+id/ll_friendRequest"
