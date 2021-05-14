@@ -12,12 +12,22 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/_80sdp">
 
+
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:id="@+id/toolbarlayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/colorAccent">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|top"
+                    android:layout_marginTop="@dimen/_12sdp"
+                    android:fontFamily="@font/inter_medium"
+                    android:text="@string/app_name"
+                    android:textColor="@color/color_white"
+                    android:textSize="@dimen/_18ssp" />
 
             </com.google.android.material.appbar.CollapsingToolbarLayout>
 
@@ -47,16 +57,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="#F5F6F8"
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Oyna"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="24sp"
-                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -65,59 +68,234 @@
                     android:orientation="horizontal"
                     android:padding="@dimen/_6sdp">
 
-                    <Button
-                        style="@style/Widget.AppCompat.Button"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:background="@drawable/shape_button_radius"
-                        android:text="Online"
-                        android:textColor="@color/color_white" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_40sdp"
+                        android:baselineAligned="false"
+                        android:orientation="horizontal">
 
-                    <Button
-                        style="@style/Widget.AppCompat.Button"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/shape_button_border"
-                        android:clipToPadding="false"
-                        android:elevation="4dp"
-                        android:text="Arkadaş"
-                        android:textColor="@color/colorAccent" />
+                        <LinearLayout
+                            android:id="@+id/btn_online"
+                            android:layout_width="0dp"
+                            android:layout_height="@dimen/_40sdp"
+                            android:layout_weight="1"
+                            android:background="@drawable/shape_offlinegamebutton"
+                            android:gravity="center"
+                            android:orientation="horizontal">
 
-                    <Button
-                        style="@style/Widget.AppCompat.Button"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/shape_button_border"
-                        android:text="Çevrimdışı"
-                        android:textColor="@color/colorAccent" />
+                            <TextView
+                                android:id="@+id/txt_headerOnline"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/inter_medium"
+                                android:text="Online" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/btn_offline"
+                            android:layout_width="0dp"
+                            android:layout_height="@dimen/_40sdp"
+                            android:layout_weight="1"
+                            android:background="@drawable/shape_onlinegamebutton"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/txt_headerOffline"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/inter_medium"
+                                android:text="Offline"
+                                android:textColor="@color/color_white" />
+                        </LinearLayout>
+
+                    </LinearLayout>
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/ll_online"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
                     android:orientation="horizontal"
-                    android:padding="@dimen/_6sdp">
+                    android:padding="@dimen/_6sdp"
+                    android:visibility="gone">
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rastgele bir kişi ile oyna" />
                 </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/ll_offline"
+                    android:layout_width="match_parent"
+                    android:layout_height="132dp"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/_6sdp"
+                    android:visibility="visible">
 
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/shape_spinner_border"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical"
+                        android:paddingBottom="@dimen/_8sdp">
+
+                        <FrameLayout
+                            android:id="@+id/img_background"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/shape_half_circle_friend_item">
+
+
+                            <TextView
+                                android:id="@+id/txt_userRecord"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center|top"
+                                android:layout_marginVertical="@dimen/_6sdp"
+                                android:gravity="center"
+                                android:text="Senin \n Rekorun"
+                                android:textColor="@color/color_white" />
+                        </FrameLayout>
+
+
+                        <TextView
+                            android:id="@+id/txt_friendName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_2sdp"
+                            android:gravity="center"
+                            android:hint="İlkcan Yılmaz"
+                            android:text="60"
+                            android:textColor="#1E1E1E"
+                            android:textSize="24sp"
+                            android:textStyle="bold" />
+
+
+                        <LinearLayout
+                            android:id="@+id/ll_friendRequest"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="@dimen/_4sdp"
+                            android:gravity="bottom|center_horizontal"
+                            android:orientation="horizontal"
+                            android:visibility="gone">
+
+                            <ImageButton
+                                android:id="@+id/btn_cancel"
+                                android:layout_width="@dimen/_24sdp"
+                                android:layout_height="@dimen/_24sdp"
+                                android:background="@drawable/ic_cancel"
+                                android:contentDescription="cancel_friendRequest"
+                                android:scaleType="centerCrop" />
+
+                            <ImageButton
+                                android:id="@+id/btn_accept"
+                                android:layout_width="@dimen/_24sdp"
+                                android:layout_height="@dimen/_24sdp"
+                                android:layout_marginStart="@dimen/_8sdp"
+                                android:background="@drawable/ic_checked"
+                                android:contentDescription="accept_friendRequest"
+                                android:scaleType="centerCrop" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_gravity="center"
+                        android:layout_weight="1.6"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="@dimen/_12sdp"
+                            android:background="@drawable/shape_level_header"
+                            android:fontFamily="@font/inter_medium"
+                            android:gravity="center"
+                            android:padding="4dp"
+                            android:text="Seviye"
+                            android:textColor="@color/color_white" />
+
+
+                        <TextView
+                            android:id="@+id/txt_level"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="12dp"
+                            android:layout_marginHorizontal="@dimen/_12sdp"
+                            android:background="@drawable/shape_level_content"
+                            android:fontFamily="@font/inter_bold"
+                            android:gravity="center"
+                            android:text="Başlangıç"
+                            android:textColor="@color/colorAccent" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentEnd="true"
+                        android:layout_weight="1"
+                        android:background="@drawable/shape_spinner_border"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical"
+                        android:paddingBottom="@dimen/_8sdp">
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/shape_half_circle_friend_item">
+
+
+                            <TextView
+                                android:id="@+id/txt_wordRecord"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center|top"
+                                android:layout_marginVertical="@dimen/_6sdp"
+                                android:gravity="center"
+                                android:text="Dünya \n Rekoru"
+                                android:textColor="@color/color_white" />
+                        </FrameLayout>
+
+
+                        <TextView
+                            android:id="@+id/txt_recor"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_2sdp"
+                            android:gravity="center"
+                            android:text="60"
+                            android:textColor="#1E1E1E"
+                            android:textSize="24sp"
+                            android:textStyle="bold" />
+
+
+                    </LinearLayout>
+                </LinearLayout>
             </LinearLayout>
+
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cv_gameRequst"
+            android:id="@+id/cv_gameRequest"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:layout_marginLeft="@dimen/_14sdp"
             android:layout_marginTop="@dimen/_48sdp"
             android:layout_marginRight="@dimen/_14sdp"
-            app:cardCornerRadius="@dimen/_12sdp"
             android:visibility="gone"
+            app:cardCornerRadius="@dimen/_12sdp"
             app:cardElevation="4dp"
             app:layout_anchor="@id/appBar"
             app:layout_anchorGravity="bottom|center">
@@ -172,8 +350,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_12sdp"
                         android:background="@drawable/shape_button_radius_green"
-                        android:textColor="@color/color_white"
-                        android:text="Kabul Et" />
+                        android:text="Kabul Et"
+                        android:textColor="@color/color_white" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -395,5 +573,14 @@
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 
+        <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/adView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="bottom|center_horizontal"
+            ads:adSize="BANNER"
+            ads:adUnitId="ca-app-pub-3940256099942544/6300978111" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

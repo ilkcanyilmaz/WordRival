@@ -9,32 +9,21 @@ data class Game(
     @Exclude
     val gameId: String = "",
     @PropertyName("isDone")
-    val isDone: Boolean = false,
+    val isDone: Int = 0,
     @PropertyName("user1Id")
     val user1Id: String = "",
     @PropertyName("user2Id")
     var user2Id: String = "",
-    @PropertyName("isUser1Ready")
-    var isUser1Ready: Boolean = false,
-    @PropertyName("isUser2Ready")
-    var isUser2Ready: Boolean = false
-)
-
-data class Questions(
-    @PropertyName("word")
-    val word: String = "",
-    @PropertyName("answerTrue")
-    val answerTrue: String = "",
-    @PropertyName("answerFalse1")
-    val answerFalse1: String = "",
-    @PropertyName("answerFalse2")
-    val answerFalse2: String = "",
-    @PropertyName("answerFalse3")
-    val answerFalse3: String = "",
-    @PropertyName("level")
-    val level: Int? = 0,
-    @PropertyName("user1Answer")
-    val user1Answer: Int? = 0,
-    @PropertyName("user2Answer")
-    val user2Answer: Int? = 0,
+    @PropertyName("user1Status")
+    var user1Status: Int = 0,
+    @PropertyName("user2Status")
+    var user2Status: Int = 0,
+    @PropertyName("user1Score")
+    var user1Score: Int = 0,
+    @PropertyName("user2Score")
+    var user2Score: Int = 0,
+    @PropertyName("user1Time")
+    var user1Time: Long = 0,
+    @PropertyName("user2Time")
+    var user2Time: Long = 0
 )

@@ -7,9 +7,9 @@
         android:icon="@drawable/ic_loyalty"/>
 
     <item
-        android:id="@+id/gameFragment"
+        android:id="@+id/homeFragment"
         android:title="Oyna"
-        android:icon="@drawable/ic_play"/>
+        android:icon="@drawable/ic_home"/>
 
     <item
         android:id="@+id/profileFragment"

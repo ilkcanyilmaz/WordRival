@@ -1,18 +1,32 @@
 package com.ilkcanyilmaz.wordrival.views
 
 import android.content.Intent
-import android.net.Uri
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
+import com.facebook.*
+import com.facebook.login.LoginManager
+import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
@@ -27,19 +41,28 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     private val RC_SIGN_IN = 9001
 
     private var mAuth: FirebaseAuth? = null
+    private var user: FirebaseUser? = null
 
     // [END declare_auth]
     private var mGoogleSignInClient: GoogleSignInClient? = null
     private var progressBar: ProgressBar? = null
     private lateinit var db: FirebaseFirestore
+    private val callback: CallbackManager = CallbackManager.Factory.create()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
         init()
-        // Configure Google Sign In
-        // Configure Google Sign In
+        setBackground()
+        mAuth = FirebaseAuth.getInstance()
+    }
+
+    private fun init() {
+        progressBar = findViewById(R.id.progressBar1)
+        btn_signInGoogle.setOnClickListener(this)
+        cv_signInFacebook.setOnClickListener(this)
+        db = Firebase.firestore
         val gso =
             GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -47,16 +70,108 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 .build()
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso)
-        mAuth = FirebaseAuth.getInstance()
+
     }
 
-    private fun init() {
-        progressBar = findViewById(R.id.progressBar1)
-        btn_signInButton?.setOnClickListener(this)
-        txt_register.setOnClickListener(this)
-        btn_signInGoogle.setOnClickListener(this)
-        db = Firebase.firestore
+    private fun setBackground() {
+        Glide.with(this)
+            .asBitmap()
+            .load(R.drawable.background)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .into(object : CustomTarget<Bitmap?>() {
+                override fun onLoadCleared(placeholder: Drawable?) {}
+                override fun onResourceReady(
+                    resource: Bitmap,
+                    transition: Transition<in Bitmap?>?
+                ) {
+                    val bdrawable = BitmapDrawable(getResources(), resource)
+                    layout_login.background=bdrawable
+                }
+            })
+    }
 
+    private fun handleFacebookAccessToken(token: AccessToken) {
+
+        var photoUrl = ""
+        val params = Bundle()
+        params.putBoolean("redirect", false)
+        params.putString("height", "200")
+        params.putString("type", "normal")
+        params.putString("width", "200")
+
+        GraphRequest(
+            AccessToken.getCurrentAccessToken(),
+            "/" + token.userId + "/picture",
+            params,
+            HttpMethod.GET
+        ) { response ->
+            val jsonData =
+                response?.jsonObject?.getJSONObject("data")
+            photoUrl = jsonData?.getString("url").toString()
+        }.executeAsync()
+
+        val credential = FacebookAuthProvider.getCredential(token.token)
+        mAuth!!.signInWithCredential(credential)
+            .addOnCompleteListener(
+                this
+            ) { task ->
+                if (task.isSuccessful) {
+                    Log.d(TAG, "signInWithCredential:success")
+                    val user = mAuth!!.currentUser
+                    val userid = token.userId
+                    val ref = db.collection("Users");
+                    val query = ref.whereEqualTo("userMail", user?.email)
+                    query.get()
+                        .addOnSuccessListener { documents ->
+                            if (!documents.isEmpty) {
+                                val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                                startActivity(intent)
+                                val db: DatabaseManager? = DatabaseManager.getDatabaseManager(this)
+                                val mUser: User = User()
+                                for (document in documents) {
+                                    mUser.userToken = document["userToken"].toString()
+                                    mUser.userNickName = document["userNickName"].toString()
+                                    mUser.userMail = document["userMail"].toString()
+                                    mUser.userName = document["userFullName"].toString()
+                                    mUser.userPhoto = document["userPhoto"].toString()
+                                    mUser.userId= mAuth!!.uid.toString()
+                                }
+                                db?.userDao()?.delete(mUser)
+                                db?.userDao()?.insert(user = mUser)
+                                finish()
+                            } else {
+                                val intent =
+                                    Intent(this@LoginActivity, RegisterActivity::class.java)
+                                intent.putExtra("userName", user?.displayName)
+                                intent.putExtra("userMail", user?.email)
+                                intent.putExtra("userPhoto", photoUrl)
+                                intent.putExtra("registerType", "facebook")
+                                startActivity(intent)
+                                finish()
+                            }
+
+                        }
+                        .addOnFailureListener { exception ->
+                            Log.w(TAG, "Error getting documents: ", exception)
+                        }
+
+
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w("hatata", "signInWithCredential:failure", task.exception)
+                    if (task.exception!!.message == "An account already exists with the same email address but different sign-in credentials. Sign in using a provider associated with this email address.") {
+                        Toast.makeText(
+                            applicationContext,
+                            "Aynı e-posta adresiyle bir hesap zaten mevcut. Bu e-posta adresiyle ilişkili bir sağlayıcıyı kullanarak giriş yapın.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        Toast.makeText(applicationContext, "Bir sorun oluştu", Toast.LENGTH_LONG)
+                            .show()
+                    }
+                    signOut()
+                }
+            }
     }
 
     override fun onActivityResult(
@@ -81,6 +196,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 Log.w(TAG, "Google sign in failed", e)
             }
         }
+        callback.onActivityResult(requestCode, resultCode, data)
+
     }
 
     // [START auth_with_google]
@@ -97,8 +214,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "signInWithCredential:success")
                     val user = mAuth!!.currentUser
-                    val citiesRef = db.collection("Users");
-                    val query = citiesRef.whereEqualTo("userMail", user?.email)
+                    val ref = db.collection("Users");
+                    val query = ref.whereEqualTo("userMail", user?.email)
                     query.get()
                         .addOnSuccessListener { documents ->
                             if (!documents.isEmpty) {
@@ -111,8 +228,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                                     mUser.userNickName = document["userNickName"].toString()
                                     mUser.userMail = document["userMail"].toString()
                                     mUser.userName = document["userFullName"].toString()
-                                    mUser.userLevel = document["userLevel"].toString().toInt()
                                     mUser.userPhoto = document["userPhoto"].toString()
+                                    mUser.userId = mAuth!!.uid.toString()
                                 }
                                 db?.userDao()?.delete(mUser)
                                 db?.userDao()?.insert(user = mUser)
@@ -172,11 +289,11 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun showProgressBar() {
-        progressBar!!.visibility = View.VISIBLE
+        progressBar1!!.visibility = View.VISIBLE
     }
 
     private fun hideProgressBar() {
-        progressBar!!.visibility = View.GONE
+        progressBar1!!.visibility = View.GONE
     }
 
     private fun InsertNewUserFirestore(userName: String) {
@@ -224,15 +341,36 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View) {
         when (v.id) {
-            R.id.btn_signInButton -> {
-                signInGoogle()
-            }
-            R.id.txt_register -> {
-                val intent = Intent(applicationContext, RegisterActivity::class.java)
-                startActivity(intent)
-            }
             R.id.btn_signInGoogle -> {
                 signInGoogle()
+            }
+            R.id.cv_signInFacebook -> {
+                LoginManager.getInstance().logInWithReadPermissions(
+                    this, listOf(
+                        "email",
+                        "public_profile"
+                    )
+                )
+                LoginManager.getInstance().registerCallback(
+                    callback,
+                    object : FacebookCallback<LoginResult?> {
+                        override fun onSuccess(loginResult: LoginResult?) {
+                            val accessToken = AccessToken.getCurrentAccessToken()
+                            val isLoggedIn = accessToken != null && !accessToken.isExpired
+                            if (isLoggedIn) {
+                                handleFacebookAccessToken(accessToken)
+                            }
+                        }
+
+                        override fun onCancel() {
+                            Log.d("FacebookLoginCancel:", "onCancel")
+                        }
+
+                        override fun onError(exception: FacebookException) {
+                            Log.d("FacebookLoginError:", exception.message.toString())
+                            // App code
+                        }
+                    })
             }
         }
     }

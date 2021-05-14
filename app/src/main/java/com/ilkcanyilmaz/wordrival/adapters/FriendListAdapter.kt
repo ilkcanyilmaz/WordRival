@@ -43,12 +43,10 @@ class FriendListAdapter(userList: List<Friend>, context: Context) :
     interface PlayButtonListener {
         fun onPlayButtonClick(friend: Friend)
     }
-    inner class UserViewHolder(productRowBinding: ItemFriendBinding) :
-        RecyclerView.ViewHolder(productRowBinding.getRoot()) {
-        var productRowBinding: ItemFriendBinding
+    inner class UserViewHolder(private var productRowBinding: ItemFriendBinding) :
+        RecyclerView.ViewHolder(productRowBinding.root) {
 
         init {
-            this.productRowBinding = productRowBinding
             /* productRowBinding.activeButton.setOnClickListener(View.OnClickListener {
                  Log.d(
                      TAG,
@@ -58,7 +56,7 @@ class FriendListAdapter(userList: List<Friend>, context: Context) :
         }
 
         fun bindto(data: Friend?) {
-            productRowBinding.setData(data)
+            productRowBinding.data = data
             productRowBinding.executePendingBindings()
 
             if (data?.isFriend == 0) {

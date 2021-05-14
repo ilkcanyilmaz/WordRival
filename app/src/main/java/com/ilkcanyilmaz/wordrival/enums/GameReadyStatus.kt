@@ -5,7 +5,6 @@ enum class GameReadyStatus(val value: Int) {
     READY(1),
     REJECTED(2);
 
-
     fun getTypeID(): Int {
         return value
     }

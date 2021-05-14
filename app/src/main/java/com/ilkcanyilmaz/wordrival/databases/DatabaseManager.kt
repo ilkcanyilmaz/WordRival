@@ -5,16 +5,19 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.ilkcanyilmaz.wordrival.daos.FriendDao
+import com.ilkcanyilmaz.wordrival.daos.QuestionDao
 import com.ilkcanyilmaz.wordrival.daos.UserDao
 import com.ilkcanyilmaz.wordrival.models.Friend
+import com.ilkcanyilmaz.wordrival.models.Question
 import com.ilkcanyilmaz.wordrival.models.User
 
-@Database(entities = [User::class, Friend::class], version = 1)
+@Database(entities = [User::class, Friend::class, Question::class], version = 1)
 abstract class DatabaseManager : RoomDatabase() {
 
 
     abstract fun userDao(): UserDao
     abstract fun friendDao(): FriendDao
+    abstract fun questionDao(): QuestionDao
 
     companion object {
         var INSTANCE: DatabaseManager? = null
@@ -30,6 +33,5 @@ abstract class DatabaseManager : RoomDatabase() {
             }
             return INSTANCE
         }
-
     }
 }

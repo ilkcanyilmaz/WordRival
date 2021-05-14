@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator
 import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
+import android.graphics.drawable.GradientDrawable
 import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
@@ -13,13 +14,18 @@ import android.view.ViewGroup
 import android.view.Window
 import android.widget.Button
 import android.widget.Toast
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.github.aakira.expandablelayout.ExpandableLayoutListenerAdapter
 import com.github.aakira.expandablelayout.Utils
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.functions.FirebaseFunctions
@@ -29,13 +35,11 @@ import com.ilkcanyilmaz.wordrival.MyFirebaseInstanceIDService
 import com.ilkcanyilmaz.wordrival.R
 import com.ilkcanyilmaz.wordrival.adapters.FriendListAdapter
 import com.ilkcanyilmaz.wordrival.databases.DatabaseManager
-import com.ilkcanyilmaz.wordrival.enums.GameReadyStatus
-import com.ilkcanyilmaz.wordrival.enums.GameRequestType
-import com.ilkcanyilmaz.wordrival.enums.GameType
-import com.ilkcanyilmaz.wordrival.enums.SendFcmType
+import com.ilkcanyilmaz.wordrival.enums.*
 import com.ilkcanyilmaz.wordrival.models.Friend
 import com.ilkcanyilmaz.wordrival.models.User
 import com.ilkcanyilmaz.wordrival.utils.SendFCM
+import com.ilkcanyilmaz.wordrival.utils.pxToDp
 import com.ilkcanyilmaz.wordrival.viewmodels.HomeViewModel
 import kotlinx.android.synthetic.main.customdialog_add_friend.*
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -54,6 +58,9 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
     private lateinit var db: DatabaseManager
     private var requestGameId = ""
     var functions: FirebaseFunctions
+    var gameDisplayType: GameDisplay = GameDisplay.ONLINE
+    private var level: Level = Level.EASY
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -74,15 +81,22 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
         viewModel = ViewModelProviders.of(this).get(
             HomeViewModel::class.java
         )
+        MobileAds.initialize(requireContext())
+        updateUIGameDisplay()
+        btn_online.setOnClickListener(this)
+        btn_offline.setOnClickListener(this)
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
         db = context?.let { DatabaseManager.getDatabaseManager(it) }!!
         user = db.userDao().getUser()
         btn_play.setOnClickListener(this)
         btn_gameReject.setOnClickListener(this)
         btn_gameAccept.setOnClickListener(this)
-        ExpandedLayout()
-        UpdateUI()
+        setLevelSpinner()
+        expandedLayout()
+        updateUIGameRequest()
         viewModel.getFriendsFirestore(firestore, mAuth.currentUser?.uid.toString())
-        observeLiveData()
+        observeFriends()
         /*btn_addFriend.setOnClickListener(View.OnClickListener {
             showOkeyDialog(activity)
         })*/
@@ -97,7 +111,28 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
          })*/
     }
 
-    fun ExpandedLayout() {
+    private fun setLevelSpinner() {
+        val values: Array<String> = arrayOf("Kolay", "Orta", "Zor")
+        txt_level.setOnClickListener {
+            when (level) {
+                Level.EASY -> {
+                    level=Level.NORMAL
+                    txt_level.text=values[1]
+                }
+                Level.NORMAL -> {
+                    level=Level.HARD
+                    txt_level.text=values[2]
+                }
+                Level.HARD -> {
+                    level=Level.EASY
+                    txt_level.text=values[0]
+                }
+            }
+        }
+
+    }
+
+    private fun expandedLayout() {
         ll_friends.setOnClickListener {
             expandableLayout_friends.toggle()
         }
@@ -111,7 +146,7 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
             }
         })
         fl_addFriend.setOnClickListener {
-            ShowDialogAddFriend()
+            showDialogAddFriend()
         }
     }
 
@@ -122,7 +157,7 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
         return animator
     }
 
-    fun UpdateUI() {
+    private fun updateUIGameRequest() {
         val docRef =
             firestore.collection("Users").document(mAuth.uid.toString()).collection("GameRequest")
                 .document("request")
@@ -133,11 +168,11 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
             }
             if (snapshot != null) {
                 if (snapshot.data != null) {
-                    cv_gameRequst.visibility = View.VISIBLE
+                    cv_gameRequest.visibility = View.VISIBLE
                     cv_game.visibility = View.GONE
                     requestGameId = snapshot.data!!["gameId"].toString()
                 } else {
-                    cv_gameRequst.visibility = View.GONE
+                    cv_gameRequest.visibility = View.GONE
                     cv_game.visibility = View.VISIBLE
                 }
             }
@@ -153,13 +188,115 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
         dialog.show()
     }
 
-    fun startGameActivity() {
-        val intent = Intent(context, GameActivity::class.java)
-        context?.startActivity(intent)
+    private fun observeRandomGameId(dialog: Dialog) {
+        viewModel.randomGameId.observe(this, {
+            it.let {
+                if (it.isNotEmpty()) {
+                    val docRef =
+                        Firebase.firestore.collection("Games").document(it)
+                    docRef.addSnapshotListener(requireActivity()) { snapshot, e ->
+                        if (e != null) {
+                            Log.w("TAG", "Listen failed.", e)
+                            return@addSnapshotListener
+                        }
+
+                        if (snapshot != null && snapshot.exists()) {
+                            val gameId = it
+                            if (gameId.isNotEmpty()) {
+                                dialog.dismiss()
+                                val action =
+                                    HomeFragmentDirections.actionHomeFragmentToGameFragment(
+                                        gameId,
+                                        UserType.USER1.getTypeID()
+                                    )
+                                if (findNavController().currentDestination!!.id == R.id.homeFragment) {
+                                    findNavController().navigate(action)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        })
+
+    }
+
+    private fun startOfflineGame() {
+        val action = HomeFragmentDirections.actionHomeFragmentToOfflineGameFragment()
+        findNavController().navigate(action)
+    }
+
+    private fun startRandomGameActivity() {
+        val game = hashMapOf(
+            "userScore" to user.userScore,
+            "userStatus" to 0,
+            "gameId" to ""
+        )
+        val data = HashMap<String, Any>()
+        data["user1Id"] = mAuth.uid.toString()
+        data["user1Score"] = user.userScore
+        var isAddPool = false
+        val poolRef: DocumentReference = firestore.collection("Pool").document(mAuth.uid.toString())
+        val dialog = Dialog(requireContext())
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(false)
+        dialog.setContentView(R.layout.progressdialog_game_connect)
+        dialog.show()
+        val btnCancel = dialog.findViewById(R.id.btn_cancel) as Button
+        btnCancel.setOnClickListener {
+            /* if (gameId.length > 0) {
+                 Firebase.firestore.collection("Games").document(gameId).delete()
+             }*/
+            if (isAddPool) {
+                poolRef.delete()
+            }
+            dialog.dismiss()
+        }
+        viewModel.getRandomGameConnect(data)
+
+        poolRef
+            .set(game)
+            .addOnSuccessListener {
+                isAddPool = true
+                poolRef.addSnapshotListener(requireActivity()) { snapshot, e ->
+                    if (e != null) {
+                        Log.w("TAG", "Listen failed.", e)
+                        return@addSnapshotListener
+                    }
+
+                    if (snapshot != null && snapshot.exists()) {
+                        val gameId = snapshot["gameId"].toString()
+                        if (gameId.isNotEmpty()) {
+                            poolRef.delete()
+                            val action = HomeFragmentDirections.actionHomeFragmentToGameFragment(
+                                gameId,
+                                UserType.USER2.getTypeID()
+                            )
+                            findNavController().navigate(action)
+                            dialog.dismiss()
+                            /*val intent = Intent(
+                                context,
+                                GameActivity::class.java
+                            )
+                            intent.putExtra(
+                                "userType",
+                                UserType.USER2.getTypeID()
+                            )
+                            intent.putExtra("gameId", gameId)
+                            context?.startActivity(intent)*/
+                        }
+                    }
+                }
+
+            }.addOnFailureListener { e ->
+                Log.w(TAG, "Error writing document", e)
+            }
+
+        observeRandomGameId(dialog)
     }
 
 
-    fun observeLiveData() {
+    private fun observeFriends() {
         viewModel.friends.observe(viewLifecycleOwner, Observer { friends ->
             friends.let {
                 val adapter =
@@ -168,22 +305,31 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
 
                 adapter.itemListener = this
                 adapter.playButtonListener = this
+
+
             }
         })
     }
 
-    fun observeSearchFriend(dialog: Dialog) {
+    private fun observeSearchFriend(dialog: Dialog) {
         viewModel.friendByMail.observe(viewLifecycleOwner, Observer { friends ->
             friends.let {
-                if (friends.userId.length > 0) {
+                if (friends.userId.isNotEmpty()) {
                     dialog.cv_friend.visibility = View.VISIBLE
                     dialog.txt_userName.text = friends.userNickName
-                    Glide.with(this).load(friends.userPhoto).into(dialog.img_profilePhoto)
+                    Glide.with(this).load(friends.userPhoto)
+                        .into(dialog.img_profilePhoto)
                     dialog.btn_addFriendRequest.setOnClickListener {
                         val title = SendFcmType.FRIEND_REQUEST.getTypeID().toString()
                         val body =
                             MyFirebaseInstanceIDService.getToken(activity?.applicationContext!!) + CHAR_SPLIT + mAuth.currentUser?.uid.toString() + CHAR_SPLIT + user.userNickName + CHAR_SPLIT + user.userPhoto
-                        SendFCM(title, body, friends.userToken, friends, requireActivity())
+                        SendFCM(
+                            title,
+                            body,
+                            friends.userToken,
+                            friends,
+                            requireActivity()
+                        )
                     }
                 } else {
                     dialog.cv_friend.visibility = View.GONE
@@ -195,13 +341,16 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
         })
     }
 
-    fun ShowDialogAddFriend() {
+    fun showDialogAddFriend() {
         val dialog = Dialog(requireActivity())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(true)
         dialog.setContentView(R.layout.customdialog_add_friend)
         dialog.btn_friendSearch.setOnClickListener {
-            viewModel.getFriendsFristoreByMail(firestore, dialog.edt_name.text.toString())
+            viewModel.getFriendsFristoreByMail(
+                firestore,
+                dialog.edt_name.text.toString()
+            )
             observeSearchFriend(dialog)
         }
         dialog.show()
@@ -216,19 +365,158 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
         SendFCM(title, body, friend.friendToken, friendUser, requireActivity())
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+
+    }
+
+
+    private fun updateUIGameDisplay() {
+        when (gameDisplayType) {
+
+            GameDisplay.ONLINE -> {
+
+                val drawableOnline = btn_online.background as GradientDrawable
+                drawableOnline.setStroke(
+                    3,
+                    ResourcesCompat.getColor(resources, R.color.colorAccent, null)
+                )
+                drawableOnline.setColor(
+                    ResourcesCompat.getColor(
+                        resources,
+                        R.color.colorAccent,
+                        null
+                    )
+                )
+                drawableOnline.cornerRadii =
+                    floatArrayOf(pxToDp(8f), pxToDp(8f), 0f, 0f, 0f, 0f, pxToDp(8f), pxToDp(8f))
+                btn_online.background = drawableOnline
+
+                val drawableOffline = btn_offline.background as GradientDrawable
+                drawableOffline.setStroke(
+                    3,
+                    ResourcesCompat.getColor(resources, R.color.colorAccent, null)
+                )
+                drawableOffline.cornerRadii =
+                    floatArrayOf(0f, 0f, pxToDp(8f), pxToDp(8f), pxToDp(8f), pxToDp(8f), 0f, 0f)
+                drawableOffline.setColor(
+                    ResourcesCompat.getColor(
+                        resources,
+                        R.color.color_white,
+                        null
+                    )
+                )
+                btn_offline.background = drawableOffline
+
+
+                txt_headerOnline.setTextColor(
+                    ResourcesCompat.getColor(
+                        resources,
+                        R.color.color_tab_disable,
+                        null
+                    )
+                )
+                txt_headerOffline.setTextColor(
+                    ResourcesCompat.getColor(
+                        resources,
+                        R.color.colorAccent,
+                        null
+                    )
+                )
+
+                ll_online.visibility = View.VISIBLE
+                ll_offline.visibility = View.GONE
+
+
+            }
+
+            GameDisplay.OFFLINE -> {
+                val drawableOnline = btn_online.background as GradientDrawable
+                drawableOnline.setStroke(
+                    3,
+                    ResourcesCompat.getColor(resources, R.color.colorAccent, null)
+                )
+                drawableOnline.cornerRadii =
+                    floatArrayOf(pxToDp(8f), pxToDp(8f), 0f, 0f, 0f, 0f, pxToDp(8f), pxToDp(8f))
+                drawableOnline.setColor(
+                    ResourcesCompat.getColor(
+                        resources,
+                        R.color.color_white,
+                        null
+                    )
+                )
+
+                val drawableOffline = btn_offline.background as GradientDrawable
+                drawableOnline.setStroke(
+                    3,
+                    ResourcesCompat.getColor(resources, R.color.colorAccent, null)
+                )
+                drawableOffline.setColor(
+                    ResourcesCompat.getColor(
+                        resources,
+                        R.color.colorAccent,
+                        null
+                    )
+                )
+                drawableOffline.cornerRadii =
+                    floatArrayOf(0f, 0f, pxToDp(8f), pxToDp(8f), pxToDp(8f), pxToDp(8f), 0f, 0f)
+                btn_offline.background = drawableOffline
+
+                txt_headerOnline.setTextColor(
+                    ResourcesCompat.getColor(
+                        resources,
+                        R.color.colorAccent,
+                        null
+                    )
+                )
+                txt_headerOffline.setTextColor(
+                    ResourcesCompat.getColor(
+                        resources,
+                        R.color.color_tab_disable,
+                        null
+                    )
+                )
+
+                ll_online.visibility = View.GONE
+                ll_offline.visibility = View.VISIBLE
+
+            }
+        }
+    }
+
     override fun onClick(v: View?) {
         when (v?.id) {
+            R.id.btn_online -> {
+                gameDisplayType = GameDisplay.ONLINE
+                updateUIGameDisplay()
+            }
+            R.id.btn_offline -> {
+                gameDisplayType = GameDisplay.OFFLINE
+                updateUIGameDisplay()
+            }
+
             R.id.btn_play -> {
-                startGameActivity()
+                if (gameDisplayType == GameDisplay.ONLINE) {
+                    startRandomGameActivity()
+                } else if (gameDisplayType == GameDisplay.OFFLINE) {
+                    startOfflineGame()
+                }
             }
             R.id.btn_gameReject -> {
-                firestore.collection("Users").document(mAuth.currentUser?.uid.toString())
+                firestore.collection("Users")
+                    .document(mAuth.currentUser?.uid.toString())
                     .collection("GameRequest").document("request")
                     .delete()
                     .addOnSuccessListener {
                         Log.d(TAG, "DocumentSnapshot successfully deleted!")
                     }
-                    .addOnFailureListener { e -> Log.w(TAG, "Error deleting document", e) }
+                    .addOnFailureListener { e ->
+                        Log.w(
+                            TAG,
+                            "Error deleting document",
+                            e
+                        )
+                    }
                 firestore.collection("Games").document(requestGameId)
                     .update("user2Status", GameReadyStatus.REJECTED.getTypeID())
                     .addOnSuccessListener {
@@ -242,43 +530,56 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
             }
             R.id.btn_gameAccept -> {
                 //FriendGameConnect(this, null, GameRequestType.SENDER).execute(null as Void?)
-                val refGameDocument = firestore.collection("Games").document(requestGameId)
-
-
+                val refGameDocument =
+                    firestore.collection("Games").document(requestGameId)
+                firestore.collection("Users")
+                    .document(mAuth.currentUser?.uid.toString())
+                    .collection("GameRequest").document("request")
+                    .delete()
+                    .addOnSuccessListener {
+                        Log.d(TAG, "DocumentSnapshot successfully deleted!")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w(
+                            TAG,
+                            "Error deleting document",
+                            e
+                        )
+                    }
                 Log.d(TAG, "DocumentSnapshot successfully updated!")
-                refGameDocument.addSnapshotListener { snapshot, e ->
+                refGameDocument.get()
+                    .addOnSuccessListener { document ->
+                        if (document != null) {
+                            refGameDocument.update(
+                                "user2Status",
+                                GameReadyStatus.READY.getTypeID()
+                            )
+                                .addOnSuccessListener {
+                                    val intent =
+                                        Intent(context, GameActivity::class.java)
+                                    intent.putExtra(
+                                        "userType",
+                                        UserType.USER2.getTypeID()
+                                    )
+                                    intent.putExtra("gameId", requestGameId)
+                                    context?.startActivity(intent)
+                                }
+                        } else {
+                            firestore.collection("Users")
+                                .document(mAuth.currentUser?.uid.toString())
+                                .collection("GameRequest").document("request")
+                                .delete()
+                        }
+                    }
+                /*firestore.collection("Games").document(requestGameId)
+                .addSnapshotListener { snapshot, e ->
                     if (e != null) {
                         Log.w(TAG, "Listen failed.", e)
                         return@addSnapshotListener
                     }
-                    if (snapshot != null && snapshot.data != null) {
-                        refGameDocument.update("user2Status", GameReadyStatus.READY.getTypeID())
-                            .addOnSuccessListener {
-                                val intent = Intent(context, GameActivity::class.java)
-                                intent.putExtra("gameType", GameType.FRIEND)
-                                intent.putExtra("gameId", requestGameId)
-                                context?.startActivity(intent)
-                            }
+                    var a = snapshot?.get("Questions")
 
-                    } else {
-                        firestore.collection("Users")
-                            .document(mAuth.currentUser?.uid.toString())
-                            .collection("GameRequest").document("request")
-                            .delete()
-                        Toast.makeText(requireContext(), "Oyun isteği iptal edildi.", Toast.LENGTH_SHORT).show()
-                    }
-
-
-                    /*firestore.collection("Games").document(requestGameId)
-                    .addSnapshotListener { snapshot, e ->
-                        if (e != null) {
-                            Log.w(TAG, "Listen failed.", e)
-                            return@addSnapshotListener
-                        }
-                        var a = snapshot?.get("Questions")
-
-                    }*/
-                }
+                }*/
             }
         }
     }
@@ -287,13 +588,14 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
         FriendGameConnect(this, friend, GameRequestType.SENDER).execute(null as Void?)
     }
 
-    inner private class FriendGameConnect(
+    private inner class FriendGameConnect(
         context: HomeFragment,
         val friend: Friend?,
         val type: GameRequestType
     ) :
         AsyncTask<Void, Void, String>() {
-        private val activityReference: WeakReference<HomeFragment> = WeakReference(context)
+        private val activityReference: WeakReference<HomeFragment> =
+            WeakReference(context)
         val dialog = Dialog(activityReference.get()!!.requireContext())
         var gameId = ""
         override fun onPreExecute() {
@@ -338,8 +640,9 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
                         val isSuccess = result.split(CHAR_SPLIT).get(0)
                         gameId = result.split(CHAR_SPLIT).get(1)
                         if (isSuccess == "success") {
-                            val docRef = Firebase.firestore.collection("Games").document(gameId)
-                            docRef.addSnapshotListener { snapshot, e ->
+                            val docRef =
+                                Firebase.firestore.collection("Games").document(gameId)
+                            docRef.addSnapshotListener(requireActivity()) { snapshot, e ->
                                 if (e != null) {
                                     Log.w("TAG", "Listen failed.", e)
                                     return@addSnapshotListener
@@ -348,24 +651,41 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
                                 if (snapshot != null && snapshot.exists()) {
                                     Log.d("TAG", "Current data: ${snapshot.data}")
                                     if (!dialog.isShowing) {
-                                        docRef.delete()
+                                        viewModel.UpdateUserStatus(
+                                            gameId,
+                                            "user1Score",
+                                            GameReadyStatus.REJECTED.getTypeID()
+                                        )
                                     } else {
                                         if (snapshot["user2Status"].toString()
                                                 .toInt() == GameReadyStatus.READY.value
                                         ) {
-                                            val intent = Intent(context, GameActivity::class.java)
-                                            intent.putExtra("gameType", GameType.FRIEND)
+                                            dialog.dismiss()
+                                            val intent = Intent(
+                                                context,
+                                                GameActivity::class.java
+                                            )
+                                            intent.putExtra(
+                                                "userType",
+                                                UserType.USER1.getTypeID()
+                                            )
                                             intent.putExtra("gameId", gameId)
                                             context?.startActivity(intent)
                                         } else if (snapshot["user2Status"].toString()
                                                 .toInt() == GameReadyStatus.REJECTED.value
                                         ) {
-                                            docRef.delete()
+                                            dialog.dismiss()
+                                            Toast.makeText(
+                                                requireContext(),
+                                                "Oyun isteği reddedildi.",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
                                         }
                                         if (snapshot["user1Status"].toString()
                                                 .toInt() != GameReadyStatus.READY.value
                                         ) {
-                                            docRef.delete()
+                                            dialog.dismiss()
+                                            Log.d("firestore", "User1Status = Ready")
                                         }
                                     }
                                 } else {

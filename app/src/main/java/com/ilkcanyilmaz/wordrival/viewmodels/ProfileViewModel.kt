@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.toObject
 import com.ilkcanyilmaz.wordrival.models.Friend
 import com.ilkcanyilmaz.wordrival.models.User
 
@@ -34,27 +35,17 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun getFriendsFristoreByMail(firestore: FirebaseFirestore, name: String) {
-        var friend: User = User(
-            "", "", "", "", "", 0, 0, "0"
-        )
+        var friend: User = User()
         firestore.collection("Users")
             .whereEqualTo("userNickName", name)
             .get()
             .addOnSuccessListener { documents ->
                 if (documents.isEmpty) {
-                    friend = User("", "", "", "", "", 0, 0, "0")
+                    friend = User()
                 } else {
                     for (document in documents) {
-                        friend = User(
-                            document.id,
-                            document["userToken"].toString(),
-                            document["userMail"].toString(),
-                            document["userNickName"].toString(),
-                            document["userFullName"].toString(),
-                            document["userScore"].toString().toInt(),
-                            document["userLevel"].toString().toInt(),
-                            document["userPhoto"].toString()
-                        )
+                        friend = document.toObject(User::class.java)
+                        friend.userId=document.id
                         /* dialog.ll_friend.visibility = View.VISIBLE
                          dialog.txt_userName.text = friend.userNickName
                          dialog.btn_addFriendRequest.setOnClickListener({
@@ -68,7 +59,7 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
             }
             .addOnFailureListener { exception ->
                 Log.w(TAG, "Error getting documents: ", exception)
-                friend = User("", "", "", "", "", 0, 0, "0")
+                friend = User()
             }
     }
 }

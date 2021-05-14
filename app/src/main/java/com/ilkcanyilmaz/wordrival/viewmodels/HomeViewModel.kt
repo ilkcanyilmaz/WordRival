@@ -4,15 +4,21 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
+import com.ilkcanyilmaz.wordrival.RandomGameRepository
 import com.ilkcanyilmaz.wordrival.models.Friend
 import com.ilkcanyilmaz.wordrival.models.User
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val TAG = "DocSnippets"
+    private var firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     val friends = MutableLiveData<List<Friend>>()
     val friendByMail = MutableLiveData<User>()
+    val randomGameId = MutableLiveData<String>()
 
     fun getFriendsFirestore(firestore: FirebaseFirestore, userId: String) {
 
@@ -23,38 +29,40 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 return@addSnapshotListener
             }
 
-            val objFriend=snapshot?.toObjects(Friend::class.java)
-            for ((i, item) in objFriend?.withIndex()!!){
-                item.friendId=snapshot.documents[i].id
-                item.isFriend=snapshot.documents[i]["isFriend"].toString().toInt()
+            val objFriend = snapshot?.toObjects(Friend::class.java)
+            for ((i, item) in objFriend?.withIndex()!!) {
+                item.friendId = snapshot.documents[i].id
+                item.isFriend = snapshot.documents[i]["isFriend"].toString().toInt()
             }
             friends.value = objFriend
         }
 
     }
 
+    fun getRandomGameConnect(data: HashMap<String, Any>) {
+        val randomGameRepository: RandomGameRepository = RandomGameRepository(data)
+        viewModelScope.launch {
+            Dispatchers.IO
+            randomGameRepository.getRandomConnect()
+            randomGameRepository.gameId.observeForever {
+                randomGameId.value = it
+            }
+        }.let {
+        }
+    }
+
     fun getFriendsFristoreByMail(firestore: FirebaseFirestore, name: String) {
-        var friend: User = User(
-            "", "", "", "", "", 0, 0, "0"
-        )
+        var friend: User = User()
         firestore.collection("Users")
             .whereEqualTo("userNickName", name)
             .get()
             .addOnSuccessListener { documents ->
                 if (documents.isEmpty) {
-                    friend = User("", "", "", "", "", 0, 0, "0")
+                    friend = User()
                 } else {
                     for (document in documents) {
-                        friend = User(
-                            document.id,
-                            document["userToken"].toString(),
-                            document["userMail"].toString(),
-                            document["userNickName"].toString(),
-                            document["userFullName"].toString(),
-                            document["userScore"].toString().toInt(),
-                            document["userLevel"].toString().toInt(),
-                            document["userPhoto"].toString()
-                        )
+                        friend = document.toObject(User::class.java)
+                        friend.userId = document.id
                         /* dialog.ll_friend.visibility = View.VISIBLE
                          dialog.txt_userName.text = friend.userNickName
                          dialog.btn_addFriendRequest.setOnClickListener({
@@ -68,7 +76,15 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             }
             .addOnFailureListener { exception ->
                 Log.w(TAG, "Error getting documents: ", exception)
-                friend = User("", "", "", "", "", 0, 0, "0")
+                friend = User()
+            }
+    }
+
+    fun UpdateUserStatus(gameId: String, updateField: String, status: Int) {
+        firestore.collection("Games").document(gameId)
+            .update(updateField, status)
+            .addOnSuccessListener {
+                Log.d(TAG, "DocumentSnapshot successfully updated!")
             }
     }
 }

@@ -5,70 +5,77 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.firestore.FirebaseFirestore
-import com.ilkcanyilmaz.wordrival.models.Friend
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.ilkcanyilmaz.wordrival.enums.UserType
+import com.ilkcanyilmaz.wordrival.models.Game
+import com.ilkcanyilmaz.wordrival.models.Question
 import com.ilkcanyilmaz.wordrival.models.User
 
 class GameActivityViewModel(application: Application) : AndroidViewModel(application) {
     private val TAG = "DocSnippets"
 
-    val friends = MutableLiveData<List<Friend>>()
-    val friendByMail = MutableLiveData<User>()
+    private var firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 
-    fun getFriendsFirestore(firestore: FirebaseFirestore, userId: String) {
+    val questions = MutableLiveData<List<Question>>()
+    val gameDetail = MutableLiveData<Game>()
+    val user1 = MutableLiveData<User>()
+    val user2 = MutableLiveData<User>()
 
-        val docRef = firestore.collection("Users").document(userId).collection("Friends")
+    fun getUserById(userId: String, userType: Int) {
+        val docRef = Firebase.firestore.collection("Users").document(userId)
         docRef.addSnapshotListener { snapshot, e ->
             if (e != null) {
                 Log.w(TAG, "Listen failed.", e)
                 return@addSnapshotListener
             }
 
-            val objFriend=snapshot?.toObjects(Friend::class.java)
-            for ((i, item) in objFriend?.withIndex()!!){
-                item.friendId=snapshot.documents[i].id
-                item.isFriend=snapshot.documents[i]["isFriend"].toString().toInt()
+            val objUser = snapshot?.toObject(User::class.java)
+            if (userType == UserType.USER1.getTypeID()) {
+                user1.value = objUser
+            } else if (userType==UserType.USER2.getTypeID()) {
+                user2.value = objUser
             }
-            friends.value = objFriend
+        }
+    }
+
+    fun getGameById(gameId: String) {
+        Log.d("RandomGameId", gameId)
+        val docRef = Firebase.firestore.collection("Games").document(gameId)
+        docRef.addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                Log.w(TAG, "Listen failed.", e)
+                return@addSnapshotListener
+            }
+
+            val objGame = snapshot?.toObject(Game::class.java)
+            gameDetail.value = objGame
         }
 
     }
 
-    fun getFriendsFristoreByMail(firestore: FirebaseFirestore, name: String) {
-        var friend: User = User(
-            "", "", "", "", "", 0, 0, "0"
-        )
-        firestore.collection("Users")
-            .whereEqualTo("userNickName", name)
-            .get()
-            .addOnSuccessListener { documents ->
-                if (documents.isEmpty) {
-                    friend = User("", "", "", "", "", 0, 0, "0")
-                } else {
-                    for (document in documents) {
-                        friend = User(
-                            document.id,
-                            document["userToken"].toString(),
-                            document["userMail"].toString(),
-                            document["userNickName"].toString(),
-                            document["userFullName"].toString(),
-                            document["userScore"].toString().toInt(),
-                            document["userLevel"].toString().toInt(),
-                            document["userPhoto"].toString()
-                        )
-                        /* dialog.ll_friend.visibility = View.VISIBLE
-                         dialog.txt_userName.text = friend.userNickName
-                         dialog.btn_addFriendRequest.setOnClickListener({
-                             SendFriendRequest(friend)
-                         })*/
-
-                        Log.d(TAG, "${document.id} => ${document.data}")
-                    }
+    fun getQuestionByGameId(gameId: String) {
+        firestore.collection("Games").document(gameId).collection("Questions")
+            .addSnapshotListener { value, e ->
+                if (e != null) {
+                    Log.w("GoogleActivity", "Listen failed.", e)
+                    return@addSnapshotListener
                 }
-                friendByMail.value = friend
-            }
-            .addOnFailureListener { exception ->
-                Log.w(TAG, "Error getting documents: ", exception)
-                friend = User("", "", "", "", "", 0, 0, "0")
+                val objQuestion = value?.toObjects(Question::class.java)
+                /*for (doc in value!!) {
+                val question = Question(
+                    doc.getString("word").toString(),
+                    doc.getString("answerTrue").toString(),
+                    doc.getString("answerFalse1").toString(),
+                    doc.getString("answerFalse2").toString(),
+                    doc.getString("answerFalse3").toString(),
+                    doc.get("level").toString().toInt(),
+                    doc.get("user1Answer").toString().toInt(),
+                    doc.get("user2Answer").toString().toInt()
+                )*/
+                questions.value = objQuestion
+
             }
     }
 }
+

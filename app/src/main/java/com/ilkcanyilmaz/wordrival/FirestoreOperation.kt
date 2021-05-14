@@ -22,11 +22,11 @@ class FirestoreOperation() {
         firestore = Firebase.firestore
     }
 
-    fun InsertNewUserFirestore(
+    fun insertNewUserFirestore(
         userMail: String,
         userNickName: String,
         userFullName: String,
-        userLevel: Int,
+        userScore: Int,
         userPhoto: String,
         activity: Activity
     ) {
@@ -45,9 +45,9 @@ class FirestoreOperation() {
                     "userMail" to userMail,
                     "userNickName" to userNickName,
                     "userFullName" to userFullName,
-                    "userLevel" to userLevel,
+                    "userScore" to userScore,
                     "userPhoto" to userPhoto,
-                    "userScore" to 0
+                    "userOfflineRecord" to 0
                 )
                 val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
                 val uId = mAuth.currentUser?.uid.toString()
@@ -95,16 +95,17 @@ class FirestoreOperation() {
             }
             .addOnFailureListener { e ->
                 {
-                Log.w(TAG, "Error writing document", e)
-                Toast.makeText(
-                    activity,
-                    "Bir hata oluştu. (İnternet bağlantınızı kontrol ediniz.)",
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
+                    Log.w(TAG, "Error writing document", e)
+                    Toast.makeText(
+                        activity,
+                        "Bir hata oluştu. (İnternet bağlantınızı kontrol ediniz.)",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
             }
     }
-}
+
     fun AddGameRequestWithFriend(
         friendId: String,
         friendNickName: String,
@@ -138,13 +139,16 @@ class FirestoreOperation() {
                 }
             }
     }
-fun FriendRequestResponseUpdate(friendId: String, isFriend: Int) {
-    firestore.collection("Users").document(userId).collection("Friends")
-        .document(friendId)
-        .update("isFriend", isFriend)
-        .addOnSuccessListener {
-            //Toast.makeText(activity.applicationContext, "Arkadaşlık isteği gönderildi", Toast.LENGTH_SHORT).show()
-        }
-        .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
-}
+
+    fun FriendRequestResponseUpdate(friendId: String, isFriend: Int) {
+        firestore.collection("Users").document(userId).collection("Friends")
+            .document(friendId)
+            .update("isFriend", isFriend)
+            .addOnSuccessListener {
+                //Toast.makeText(activity.applicationContext, "Arkadaşlık isteği gönderildi", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
+    }
+
+
 }

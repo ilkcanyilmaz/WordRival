@@ -96,7 +96,7 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
             .addOnCompleteListener(object : OnCompleteListener<AuthResult> {
                 override fun onComplete(p0: Task<AuthResult>) {
                     if (p0.isSuccessful) {
-                        firestoreOperation.InsertNewUserFirestore(
+                        firestoreOperation.insertNewUserFirestore(
                             edt_userMail.text.toString(),
                             edt_userNickName.text.toString(),
                             edt_userFullName.text.toString(),
@@ -114,7 +114,7 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun RegisterWithGoogle() {
-        firestoreOperation.InsertNewUserFirestore(
+        firestoreOperation.insertNewUserFirestore(
             edt_userMail.text.toString(),
             edt_userNickName.text.toString(),
             edt_userFullName.text.toString(),
@@ -131,7 +131,7 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
                     RegisterWithMailAndPassword(
                         edt_userMail.text.toString(),
                         edt_password.text.toString()
-                    ) else if (registerType == RegisterType.GOOGLE) {
+                    ) else{
                     RegisterWithGoogle()
                 }
             }

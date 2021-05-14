@@ -3,11 +3,15 @@
     <color name="colorPrimary">#457B9D</color>
     <color name="colorPrimaryDark">#1D3557</color>
     <color name="colorPrimaryLight">#F1FAEE</color>
-    <color name="colorAccent">#E63946</color>
+    <color name="colorAccent">#FA1616</color>
     <color name="color_white">#fff</color>
-    <color name="color_accent2">#F1FAEE</color>
+    <color name="color_accent2">#209EBB</color>
     <color name="color_background">#FAFAFA</color>
     <color name="color_text_header">#202020</color>
     <color name="color_red">#E53935</color>
     <color name="color_green">#43A047</color>
+    <color name="color_tab_disable">#FCFCFC</color>
+    <color name="color_true">#55C595</color>
+    <color name="color_dark_true">#388262</color>
+    <color name="color_false">#CC0D0D</color>
 </resources>

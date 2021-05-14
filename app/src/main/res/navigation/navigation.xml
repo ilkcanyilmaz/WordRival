@@ -11,23 +11,29 @@
         android:label="WordFragment"
         tools:layout="@layout/fragment_word">
         <action
-            android:id="@+id/action_wordFragment_to_gameFragment"
-            app:destination="@id/gameFragment" />
+            android:id="@+id/action_wordFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
         <action
             android:id="@+id/action_wordFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
     </fragment>
     <fragment
-        android:id="@+id/gameFragment"
+        android:id="@+id/homeFragment"
         android:name="com.ilkcanyilmaz.wordrival.views.HomeFragment"
-        android:label="fragment_game"
-        tools:layout="@layout/fragment_home" >
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home">
         <action
-            android:id="@+id/action_gameFragment_to_profileFragment"
+            android:id="@+id/action_homeFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
         <action
-            android:id="@+id/action_gameFragment_to_wordFragment2"
+            android:id="@+id/action_homeFragment_to_wordFragment2"
             app:destination="@id/wordFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_gameFragment"
+            app:destination="@id/gameFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_offlineGameFragment"
+            app:destination="@id/offlineGameFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
@@ -38,7 +44,32 @@
             android:id="@+id/action_profileFragment_to_wordFragment"
             app:destination="@id/wordFragment" />
         <action
-            android:id="@+id/action_profileFragment_to_gameFragment"
-            app:destination="@id/gameFragment" />
+            android:id="@+id/action_profileFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/gameFragment"
+        android:name="com.ilkcanyilmaz.wordrival.views.GameFragment"
+        android:label="game_fragment"
+        tools:layout="@layout/game_fragment" >
+        <action
+            android:id="@+id/action_gameFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+        <argument
+            android:name="gameId"
+            app:argType="string" />
+        <argument
+            android:name="userType"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
+    <fragment
+        android:id="@+id/offlineGameFragment"
+        android:name="com.ilkcanyilmaz.wordrival.views.OfflineGameFragment"
+        android:label="offline_game_fragment"
+        tools:layout="@layout/offline_game_fragment" >
+        <action
+            android:id="@+id/action_offlineGameFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
     </fragment>
 </navigation>

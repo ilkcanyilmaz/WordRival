@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.NavHostFragment
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
@@ -15,6 +16,7 @@ import com.ilkcanyilmaz.wordrival.R
 import com.ilkcanyilmaz.wordrival.databases.DatabaseManager
 import com.ilkcanyilmaz.wordrival.models.User
 import com.ilkcanyilmaz.wordrival.viewmodels.ProfileViewModel
+import kotlinx.android.synthetic.main.fragment_profile.*
 
 class ProfileFragment : NavHostFragment() {
     lateinit var firestoreOperation: FirestoreOperation
@@ -40,6 +42,7 @@ class ProfileFragment : NavHostFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         init()
+       // Glide.with(requireContext()).load("https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=10218274302510824&height=200&width=200&ext=1606046973&hash=AeRZbtRLCP2-pUXff-0").into(img_facebookProfilePhoto);
 
 
         //LoadFriendsList()
