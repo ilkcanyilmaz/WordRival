@@ -72,12 +72,13 @@
                 android:textSize="@dimen/_12ssp" />
         </LinearLayout>
 
-        <ImageView
+        <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/btn_addFavorite"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_plus"
+            android:layout_width="@dimen/_28sdp"
+            android:layout_height="@dimen/_28sdp"
+            app:lottie_rawRes="@raw/check_tick"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

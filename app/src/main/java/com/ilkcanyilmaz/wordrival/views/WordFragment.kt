@@ -8,8 +8,11 @@ import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import com.ilkcanyilmaz.wordrival.R
+import com.ilkcanyilmaz.wordrival.adapters.WordListAdapter
 import com.ilkcanyilmaz.wordrival.enums.GameDisplay
+import com.ilkcanyilmaz.wordrival.models.Question
 import com.ilkcanyilmaz.wordrival.utils.pxToDp
+import kotlinx.android.synthetic.main.customdialog_offline_game_end.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_home.ll_online
 import kotlinx.android.synthetic.main.fragment_home.txt_headerOffline
@@ -43,6 +46,8 @@ class WordFragment : Fragment() {
         btn_learnedWord.setOnClickListener {
             updateUIGameDisplay()
         }
+
+        loadWords()
     }
 
     private fun updateUIGameDisplay() {
@@ -140,6 +145,7 @@ class WordFragment : Fragment() {
                         null
                     )
                 )
+
                 txt_headerOffline.setTextColor(
                     ResourcesCompat.getColor(
                         resources,
@@ -155,4 +161,13 @@ class WordFragment : Fragment() {
         }
     }
 
+    private fun loadWords() {
+        val data: ArrayList<Question> = ArrayList()
+        data.add(Question("Orange", "Turuncu", "Sarı", "Yeşil", "Mavi", 1, 0, 0))
+        data.add(Question("Blue", "Mavi", "Sarı", "Yeşil", "Kırmızı", 1, 0, 0))
+
+        val adapter = WordListAdapter(data, requireContext())
+        rv_learningWord.adapter = adapter
+
+    }
 }

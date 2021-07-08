@@ -84,8 +84,17 @@ class GameEndWordsAdapter(getWords: List<Question>) :
                     )
                 )
             }
-            productRowBinding.btnAddFavorite.setOnClickListener {
-                animate(it)
+            productRowBinding.btnAddFavorite.setOnClickListener{
+                if(tick){
+                    productRowBinding.btnAddFavorite.speed=1f
+                    productRowBinding.btnAddFavorite.playAnimation()
+                    tick=false
+                }else{
+                    productRowBinding.btnAddFavorite.speed=-1f
+                    productRowBinding.btnAddFavorite.playAnimation()
+                    tick=true
+
+                }
             }
             productRowBinding.imgSound.setOnClickListener {
                 val speechListener = object : UtteranceProgressListener() {
@@ -104,6 +113,7 @@ class GameEndWordsAdapter(getWords: List<Question>) :
                     }
 
                 }
+
                 t1.setOnUtteranceProgressListener(speechListener)
                 val mostRecentUtteranceID = (Random().nextInt() % 9999999).toString() + ""
                 val params: HashMap<String, String> = HashMap()
@@ -125,12 +135,12 @@ class GameEndWordsAdapter(getWords: List<Question>) :
                 ) as AnimatedVectorDrawable?
         }
 
-        fun animate(view: View?) {
+       /* fun animate(view: View?) {
             val drawable: AnimatedVectorDrawable? = if (tick) tickToCross else crossToTick
             productRowBinding.btnAddFavorite.setImageDrawable(drawable)
             drawable?.start()
             tick = !tick
-        }
+        }*/
     }
 
 

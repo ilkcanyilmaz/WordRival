@@ -89,7 +89,6 @@ class OfflineGameFragment : Fragment(), View.OnClickListener {
         }
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         db = requireContext().let { DatabaseManager.getDatabaseManager(it) }!!
@@ -151,7 +150,6 @@ class OfflineGameFragment : Fragment(), View.OnClickListener {
         alertDialog.setCancelable(false)
         alertDialog.show()
     }
-
 
     private fun timerAddSecond(endTime: Int, isStart: Boolean) {
         var mEndTime = endTime
