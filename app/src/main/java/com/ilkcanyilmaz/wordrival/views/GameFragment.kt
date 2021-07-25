@@ -14,7 +14,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
@@ -24,18 +24,21 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.ktx.Firebase
 import com.ilkcanyilmaz.wordrival.R
-import com.ilkcanyilmaz.wordrival.databases.DatabaseManager
 import com.ilkcanyilmaz.wordrival.enums.UserType
 import com.ilkcanyilmaz.wordrival.models.Game
 import com.ilkcanyilmaz.wordrival.models.Question
 import com.ilkcanyilmaz.wordrival.models.User
+import com.ilkcanyilmaz.wordrival.repositories.UserLocalDataSource
 import com.ilkcanyilmaz.wordrival.viewmodels.GameViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import douglasspgyn.com.github.circularcountdown.CircularCountdown
 import douglasspgyn.com.github.circularcountdown.listener.CircularListener
 import kotlinx.android.synthetic.main.activity_game.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.customdialog_game_end.*
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class GameFragment : Fragment(), View.OnClickListener {
     private var mAuth: FirebaseAuth? = null
     private var firestore: FirebaseFirestore
@@ -52,8 +55,10 @@ class GameFragment : Fragment(), View.OnClickListener {
     private var user2PhotoUrl = ""
     private lateinit var userName: String
     private lateinit var user: User
-    private lateinit var db: DatabaseManager
     private lateinit var callback: OnBackPressedCallback
+    private val viewModel: GameViewModel by viewModels()
+    @Inject
+    lateinit var userDataSource: UserLocalDataSource
 
     init {
         mAuth = FirebaseAuth.getInstance()
@@ -64,7 +69,6 @@ class GameFragment : Fragment(), View.OnClickListener {
         fun newInstance() = GameFragment()
     }
 
-    private lateinit var viewModel: GameViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -105,8 +109,7 @@ class GameFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        db = requireContext()?.let { DatabaseManager.getDatabaseManager(it) }!!
-        user = db.userDao().getUser()
+
         arguments?.let {
             gameId = GameFragmentArgs.fromBundle(it).gameId
             userType = GameFragmentArgs.fromBundle(it).userType
@@ -200,7 +203,9 @@ class GameFragment : Fragment(), View.OnClickListener {
 
         dialog.avLoading.show()
         dialog.rv_users.visibility = View.GONE
-        dialog.txt_user1Name.text = user.userNickName
+        userDataSource.getUser {
+            dialog.txt_user1Name.text = it?.userNickName
+        }
         dialog.txt_user2Name.text = userName
         dialog.btn_mainPage.setOnClickListener {
             val intent = Intent(requireContext(), MainActivity::class.java)
@@ -244,7 +249,6 @@ class GameFragment : Fragment(), View.OnClickListener {
     }
 
     private fun init() {
-        viewModel = ViewModelProvider(this).get(GameViewModel::class.java)
         btn_answer1.setOnClickListener(this)
         btn_answer2.setOnClickListener(this)
         btn_answer3.setOnClickListener(this)

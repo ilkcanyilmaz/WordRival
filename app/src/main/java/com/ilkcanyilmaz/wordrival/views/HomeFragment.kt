@@ -30,36 +30,41 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.ktx.Firebase
-import com.ilkcanyilmaz.wordrival.FirestoreOperation
 import com.ilkcanyilmaz.wordrival.MyFirebaseInstanceIDService
 import com.ilkcanyilmaz.wordrival.R
 import com.ilkcanyilmaz.wordrival.adapters.FriendListAdapter
-import com.ilkcanyilmaz.wordrival.databases.DatabaseManager
 import com.ilkcanyilmaz.wordrival.enums.*
 import com.ilkcanyilmaz.wordrival.models.Friend
 import com.ilkcanyilmaz.wordrival.models.User
+import com.ilkcanyilmaz.wordrival.repositories.FirestoreRepository
+import com.ilkcanyilmaz.wordrival.repositories.UserLocalDataSource
 import com.ilkcanyilmaz.wordrival.utils.SendFCM
 import com.ilkcanyilmaz.wordrival.utils.pxToDp
 import com.ilkcanyilmaz.wordrival.viewmodels.HomeViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.customdialog_add_friend.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import java.lang.ref.WeakReference
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
     FriendListAdapter.PlayButtonListener, View.OnClickListener {
     private val TAG = "GoogleActivity"
     private var mAuth: FirebaseAuth
     private var firestore: FirebaseFirestore
-    lateinit var firestoreOperation: FirestoreOperation
+    lateinit var firestoreRepository: FirestoreRepository
     private val BASE_URL = "https://fcm.googleapis.com/fcm/"
     private lateinit var viewModel: HomeViewModel
+    private var user: User?=null
     val CHAR_SPLIT = "$!"
-    private lateinit var user: User
-    private lateinit var db: DatabaseManager
     private var requestGameId = ""
     var functions: FirebaseFunctions
     var gameDisplayType: GameDisplay = GameDisplay.ONLINE
     private var level: Level = Level.EASY
+
+    @Inject
+    lateinit var userDataSource: UserLocalDataSource
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -87,8 +92,6 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
         btn_offline.setOnClickListener(this)
         val adRequest = AdRequest.Builder().build()
         adView.loadAd(adRequest)
-        db = context?.let { DatabaseManager.getDatabaseManager(it) }!!
-        user = db.userDao().getUser()
         btn_play.setOnClickListener(this)
         btn_gameReject.setOnClickListener(this)
         btn_gameAccept.setOnClickListener(this)
@@ -97,6 +100,9 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
         updateUIGameRequest()
         viewModel.getFriendsFirestore(firestore, mAuth.currentUser?.uid.toString())
         observeFriends()
+        userDataSource.getUser {
+            user = it
+        }
         /*btn_addFriend.setOnClickListener(View.OnClickListener {
             showOkeyDialog(activity)
         })*/
@@ -116,16 +122,16 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
         txt_level.setOnClickListener {
             when (level) {
                 Level.EASY -> {
-                    level=Level.NORMAL
-                    txt_level.text=values[1]
+                    level = Level.NORMAL
+                    txt_level.text = values[1]
                 }
                 Level.NORMAL -> {
-                    level=Level.HARD
-                    txt_level.text=values[2]
+                    level = Level.HARD
+                    txt_level.text = values[2]
                 }
                 Level.HARD -> {
-                    level=Level.EASY
-                    txt_level.text=values[0]
+                    level = Level.EASY
+                    txt_level.text = values[0]
                 }
             }
         }
@@ -227,14 +233,15 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
     }
 
     private fun startRandomGameActivity() {
+
         val game = hashMapOf(
-            "userScore" to user.userScore,
+            "userScore" to user!!.userScore,
             "userStatus" to 0,
             "gameId" to ""
         )
         val data = HashMap<String, Any>()
         data["user1Id"] = mAuth.uid.toString()
-        data["user1Score"] = user.userScore
+        data["user1Score"] = user!!.userScore
         var isAddPool = false
         val poolRef: DocumentReference = firestore.collection("Pool").document(mAuth.uid.toString())
         val dialog = Dialog(requireContext())
@@ -322,7 +329,7 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
                     dialog.btn_addFriendRequest.setOnClickListener {
                         val title = SendFcmType.FRIEND_REQUEST.getTypeID().toString()
                         val body =
-                            MyFirebaseInstanceIDService.getToken(activity?.applicationContext!!) + CHAR_SPLIT + mAuth.currentUser?.uid.toString() + CHAR_SPLIT + user.userNickName + CHAR_SPLIT + user.userPhoto
+                            MyFirebaseInstanceIDService.getToken(activity?.applicationContext!!) + CHAR_SPLIT + mAuth.currentUser?.uid.toString() + CHAR_SPLIT + user?.userNickName + CHAR_SPLIT + user?.userPhoto
                         SendFCM(
                             title,
                             body,
@@ -358,8 +365,8 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
 
     override fun onFriendRequestResponse(friend: Friend, isFriend: Int) {
         val title = SendFcmType.FRIEND_REQUEST_RESPONSE.getTypeID().toString()
-        val body = mAuth.currentUser?.uid + CHAR_SPLIT + db.userDao()
-            .getUser().userNickName + CHAR_SPLIT + isFriend.toString()
+        val body =
+            mAuth.currentUser?.uid + CHAR_SPLIT + user?.userNickName + CHAR_SPLIT + isFriend.toString()
         val friendUser = User()
         friendUser.userId = friend.friendId
         SendFCM(title, body, friend.friendToken, friendUser, requireActivity())

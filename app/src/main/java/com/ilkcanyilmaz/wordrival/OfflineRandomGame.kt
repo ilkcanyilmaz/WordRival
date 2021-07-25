@@ -1,18 +1,22 @@
 package com.ilkcanyilmaz.wordrival
 
-import com.ilkcanyilmaz.wordrival.databases.DatabaseManager
 import com.ilkcanyilmaz.wordrival.models.Question
 
-fun offlineRandomGame(db: DatabaseManager): ArrayList<Question> {
-    val questions = ArrayList<Question>()
+/**
+ * Rastgele offline soru üretir
+ */
+
+fun offlineRandomGame(questions: List<Question>): ArrayList<Question> {
+    val questionCount = 4
+    val randomQuestions = ArrayList<Question>()
     var i = 0
-    while (i < 6) {
-        val randomQuestion = db.questionDao().getQuestion().random()
-        if (!questions.contains(randomQuestion)) {
-            questions.add(randomQuestion)
-            i++
-        }
+    while (i < questionCount) {
+        val randomQuestion=questions.random()
+            if (!randomQuestions.contains(randomQuestion)) {
+                randomQuestions.add(randomQuestion)
+                i++
+            }
     }
 
-    return questions
+    return randomQuestions
 }

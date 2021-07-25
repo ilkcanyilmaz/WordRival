@@ -5,12 +5,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.ilkcanyilmaz.wordrival.databases.DatabaseManager
 import com.ilkcanyilmaz.wordrival.databinding.ItemSaveWordBinding
 import com.ilkcanyilmaz.wordrival.models.Question
-
 
 class WordListAdapter(userList: List<Question>, context: Context) :
     RecyclerView.Adapter<WordListAdapter.WordViewHolder>() {
@@ -63,10 +62,9 @@ class WordListAdapter(userList: List<Question>, context: Context) :
         }
 
         fun updateIsFriend(friendMail: String, isFriend: Int) {
-            val db: DatabaseManager? =
-                DatabaseManager.getDatabaseManager(context = itemView.context)
+
             Firebase.firestore.collection("Users")
-                .document(db?.userDao()?.getUser()?.userMail.toString())
+                .document(FirebaseAuth.getInstance().uid.toString())
                 .collection("Friends")
                 .document(friendMail)
                 .update("isFriend", isFriend)

@@ -4,7 +4,6 @@ import android.graphics.drawable.AnimatedVectorDrawable
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.content.res.ResourcesCompat
@@ -12,16 +11,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ilkcanyilmaz.wordrival.R
 import com.ilkcanyilmaz.wordrival.databinding.ItemGameEndWordBinding
 import com.ilkcanyilmaz.wordrival.enums.AnswerType
+import com.ilkcanyilmaz.wordrival.enums.WordStatus
 import com.ilkcanyilmaz.wordrival.models.Question
-import com.ilkcanyilmaz.wordrival.models.Word
+import com.ilkcanyilmaz.wordrival.models.WordModel
+import com.ilkcanyilmaz.wordrival.viewmodels.OfflineGameViewModel
 import java.util.*
 import kotlin.collections.HashMap
 
-class GameEndWordsAdapter(getWords: List<Question>) :
+class GameEndWordsAdapter(getWords: List<Question>, viewModel: OfflineGameViewModel) :
     RecyclerView.Adapter<GameEndWordsAdapter.ViewHolder>() {
     var getWords: List<Question>
     var itemListener: ItemListener? = null
-
+    var viewModel:OfflineGameViewModel=viewModel
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val productRowBinding: ItemGameEndWordBinding =
@@ -38,7 +39,7 @@ class GameEndWordsAdapter(getWords: List<Question>) :
     }
 
     interface ItemListener {
-        fun onFriendRequestResponse(word: Word)
+        fun onFriendRequestResponse(wordModel: WordModel)
     }
 
     inner class ViewHolder(private var productRowBinding: ItemGameEndWordBinding) :
@@ -55,7 +56,6 @@ class GameEndWordsAdapter(getWords: List<Question>) :
                      "onClick: " + userList[adapterPosition]
                  )
              })*/
-
         }
 
         fun setData(data: Question?, position: Int) {
@@ -84,16 +84,18 @@ class GameEndWordsAdapter(getWords: List<Question>) :
                     )
                 )
             }
-            productRowBinding.btnAddFavorite.setOnClickListener{
-                if(tick){
-                    productRowBinding.btnAddFavorite.speed=1f
-                    productRowBinding.btnAddFavorite.playAnimation()
-                    tick=false
-                }else{
-                    productRowBinding.btnAddFavorite.speed=-1f
-                    productRowBinding.btnAddFavorite.playAnimation()
-                    tick=true
+            productRowBinding.btnAddFavorite.setOnClickListener {
 
+                if (tick) {
+                    viewModel.firestoreRepository.insertFavouriteWord(WordModel(data?.id!!, WordStatus.STUDIED.getTypeID()))
+                    viewModel.wordLocalDataSource.addWord(WordModel(data.id, WordStatus.STUDIED.getTypeID()))
+                    productRowBinding.btnAddFavorite.speed = 1f
+                    productRowBinding.btnAddFavorite.playAnimation()
+                    tick = false
+                } else {
+                    productRowBinding.btnAddFavorite.speed = -1f
+                    productRowBinding.btnAddFavorite.playAnimation()
+                    tick = true
                 }
             }
             productRowBinding.imgSound.setOnClickListener {
@@ -135,12 +137,12 @@ class GameEndWordsAdapter(getWords: List<Question>) :
                 ) as AnimatedVectorDrawable?
         }
 
-       /* fun animate(view: View?) {
-            val drawable: AnimatedVectorDrawable? = if (tick) tickToCross else crossToTick
-            productRowBinding.btnAddFavorite.setImageDrawable(drawable)
-            drawable?.start()
-            tick = !tick
-        }*/
+        /* fun animate(view: View?) {
+             val drawable: AnimatedVectorDrawable? = if (tick) tickToCross else crossToTick
+             productRowBinding.btnAddFavorite.setImageDrawable(drawable)
+             drawable?.start()
+             tick = !tick
+         }*/
     }
 
 

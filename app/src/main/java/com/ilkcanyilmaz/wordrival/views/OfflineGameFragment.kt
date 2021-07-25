@@ -13,7 +13,7 @@ import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
@@ -24,13 +24,13 @@ import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.ktx.Firebase
 import com.ilkcanyilmaz.wordrival.R
 import com.ilkcanyilmaz.wordrival.adapters.GameEndWordsAdapter
-import com.ilkcanyilmaz.wordrival.databases.DatabaseManager
 import com.ilkcanyilmaz.wordrival.enums.AnswerType
 import com.ilkcanyilmaz.wordrival.models.Game
 import com.ilkcanyilmaz.wordrival.models.Question
-import com.ilkcanyilmaz.wordrival.models.User
 import com.ilkcanyilmaz.wordrival.offlineRandomGame
+import com.ilkcanyilmaz.wordrival.repositories.QuestionLocalDataSource
 import com.ilkcanyilmaz.wordrival.viewmodels.OfflineGameViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import douglasspgyn.com.github.circularcountdown.CircularCountdown
 import douglasspgyn.com.github.circularcountdown.listener.CircularListener
 import kotlinx.android.synthetic.main.activity_game.btn_answer1
@@ -44,7 +44,9 @@ import kotlinx.android.synthetic.main.customdialog_game_end.adView_gameEnd
 import kotlinx.android.synthetic.main.customdialog_game_end.btn_mainPage
 import kotlinx.android.synthetic.main.customdialog_offline_game_end.*
 import kotlinx.android.synthetic.main.offline_game_fragment.*
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class OfflineGameFragment : Fragment(), View.OnClickListener {
     private var mAuth: FirebaseAuth? = null
     private var firestore: FirebaseFirestore
@@ -58,10 +60,12 @@ class OfflineGameFragment : Fragment(), View.OnClickListener {
     private lateinit var game: Game
     private var isEndGame = false
     private lateinit var userName: String
-    private lateinit var user: User
-    private lateinit var db: DatabaseManager
     private lateinit var callback: OnBackPressedCallback
     private var remainingTime = 0
+    private val viewModel: OfflineGameViewModel by viewModels()
+
+    @Inject
+    lateinit var questionDataSource: QuestionLocalDataSource
 
     init {
         mAuth = FirebaseAuth.getInstance()
@@ -72,7 +76,6 @@ class OfflineGameFragment : Fragment(), View.OnClickListener {
         fun newInstance() = GameFragment()
     }
 
-    private lateinit var viewModel: OfflineGameViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -91,12 +94,13 @@ class OfflineGameFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        db = requireContext().let { DatabaseManager.getDatabaseManager(it) }!!
-        user = db.userDao().getUser()
 
-        getQuestions = offlineRandomGame(db)
-        loadQuestion()
-        buttonTouch()
+            getQuestions=offlineRandomGame(questionDataSource.getQuestion())
+
+            loadQuestion()
+            buttonTouch()
+
+
     }
 
     override fun onResume() {
@@ -177,7 +181,6 @@ class OfflineGameFragment : Fragment(), View.OnClickListener {
     private fun onTouch(v: View, event: MotionEvent): Boolean {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-
                 if ((v as Button).text == getQuestions[questionCounter].answerTrue) {
                     v.setBackgroundResource(R.drawable.shape_true_background)
                 } else {
@@ -231,7 +234,7 @@ class OfflineGameFragment : Fragment(), View.OnClickListener {
         dialog.btn_mainPage.setOnClickListener {
             startMainActivity()
         }
-        val adapter = GameEndWordsAdapter(getQuestions)
+        val adapter = GameEndWordsAdapter(getQuestions, viewModel)
         dialog.txt_trueCount.text = trueAnswerCounter.toString()
         dialog.txt_falseCount.text = falseAnswerCounter.toString()
         dialog.rv_word.adapter = adapter
@@ -242,13 +245,13 @@ class OfflineGameFragment : Fragment(), View.OnClickListener {
         dialog.show()
     }
 
-    fun startMainActivity(){
+    fun startMainActivity() {
         val intent = Intent(requireContext(), MainActivity::class.java)
         startActivity(intent)
     }
 
     private fun init() {
-        viewModel = ViewModelProvider(this).get(OfflineGameViewModel::class.java)
+        //viewModel = ViewModelProvider(this).get(OfflineGameViewModel::class.java)
         btn_answer1.setOnClickListener(this)
         btn_answer2.setOnClickListener(this)
         btn_answer3.setOnClickListener(this)

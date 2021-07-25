@@ -10,8 +10,11 @@ import com.ilkcanyilmaz.wordrival.enums.UserType
 import com.ilkcanyilmaz.wordrival.models.Game
 import com.ilkcanyilmaz.wordrival.models.Question
 import com.ilkcanyilmaz.wordrival.models.User
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class GameViewModel : ViewModel() {
+@HiltViewModel
+class GameViewModel @Inject constructor(): ViewModel() {
     private val TAG = "DocSnippets"
 
     private var firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
@@ -31,9 +34,9 @@ class GameViewModel : ViewModel() {
 
             val objUser = snapshot?.toObject(User::class.java)
             if (userType == UserType.USER1.getTypeID()) {
-                user1.value = objUser
+                user1.value = objUser!!
             } else if (userType== UserType.USER2.getTypeID()) {
-                user2.value = objUser
+                user2.value = objUser!!
             }
         }
     }
@@ -48,7 +51,7 @@ class GameViewModel : ViewModel() {
             }
 
             val objGame = snapshot?.toObject(Game::class.java)
-            gameDetail.value = objGame
+            gameDetail.value = objGame!!
         }
 
     }
@@ -72,7 +75,7 @@ class GameViewModel : ViewModel() {
                     doc.get("user1Answer").toString().toInt(),
                     doc.get("user2Answer").toString().toInt()
                 )*/
-                questions.value = objQuestion
+                questions.value = objQuestion!!
 
             }
     }}

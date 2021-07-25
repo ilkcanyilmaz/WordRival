@@ -22,6 +22,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.ilkcanyilmaz.wordrival.enums.SendFcmType
+import com.ilkcanyilmaz.wordrival.repositories.FirestoreRepository
 import com.ilkcanyilmaz.wordrival.views.MainActivity
 import org.json.JSONObject
 
@@ -94,7 +95,7 @@ class MyFirebaseInstanceIDService : FirebaseMessagingService() {
     fun showNotification(context: Context, title: String?, body: String?, intent: Intent?) {
         var mTitle = ""
         var mContentText = ""
-        val firebaseOperatation = FirestoreOperation()
+        val firebaseOperatation = FirestoreRepository(applicationContext)
         if (title == SendFcmType.FRIEND_REQUEST.getTypeID().toString()) {
             mTitle = "Arkadaşlık isteği"
             val bodyData = body?.split(CHAR_SPLIT)
@@ -103,7 +104,7 @@ class MyFirebaseInstanceIDService : FirebaseMessagingService() {
             val friendNickName = bodyData?.get(2).toString()
             val friendPhotoUrl = bodyData?.get(3).toString()
             mContentText = friendNickName
-            firebaseOperatation.AddFriend(
+            firebaseOperatation.addFriend(
                 friendId,
                 friendNickName,
                 friendToken,

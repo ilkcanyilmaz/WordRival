@@ -13,7 +13,7 @@ class RandomGameRepository(val data: HashMap<String, Any>?) {
             .getHttpsCallable("randomGameConnect")
             .call(data)
             .continueWith {
-                val result = it.result.data as String
+                val result = it.result?.data as String
                 val isSuccess = result.split(CHAR_SPLIT)[0]
                 val gameId = result.split(CHAR_SPLIT)[1]
                 if (isSuccess == "success") {

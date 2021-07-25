@@ -8,8 +8,11 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import com.ilkcanyilmaz.wordrival.models.Friend
 import com.ilkcanyilmaz.wordrival.models.User
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class ProfileViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class ProfileViewModel @Inject constructor(application: Application): AndroidViewModel(application) {
     private val TAG = "DocSnippets"
 
     val friends = MutableLiveData<List<Friend>>()
@@ -29,7 +32,7 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
                 item.friendId=snapshot.documents[i].id
                 item.isFriend=snapshot.documents[i]["isFriend"].toString().toInt()
             }
-            friends.value = objFriend
+            friends.value = objFriend!!
         }
 
     }

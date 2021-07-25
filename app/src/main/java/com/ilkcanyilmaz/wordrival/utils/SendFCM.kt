@@ -2,7 +2,7 @@ package com.ilkcanyilmaz.wordrival.utils
 
 import android.app.Activity
 import android.util.Log
-import com.ilkcanyilmaz.wordrival.FirestoreOperation
+import com.ilkcanyilmaz.wordrival.repositories.FirestoreRepository
 import com.ilkcanyilmaz.wordrival.enums.SendFcmType
 import com.ilkcanyilmaz.wordrival.interfaces.FcmInterface
 import com.ilkcanyilmaz.wordrival.models.FCMModel
@@ -16,7 +16,7 @@ private val BASE_URL = "https://fcm.googleapis.com/fcm/"
 val CHAR_SPLIT = "$!"
 
 fun SendFCM(title: String, body: String, token: String, friend: User?, activity: Activity?) {
-    var firestoreOperation = FirestoreOperation()
+    val firestoreOperation = FirestoreRepository(activity?.applicationContext!!)
     val retrofit = Retrofit.Builder().baseUrl(BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
@@ -40,7 +40,7 @@ fun SendFCM(title: String, body: String, token: String, friend: User?, activity:
             response: Response<Response<FCMModel>>
         ) {
             if (title == SendFcmType.FRIEND_REQUEST.getTypeID().toString()) {
-                firestoreOperation.AddFriend(
+                firestoreOperation.addFriend(
                     friend?.userId.toString(),
                     friend?.userNickName.toString(),
                     friend?.userToken.toString(),

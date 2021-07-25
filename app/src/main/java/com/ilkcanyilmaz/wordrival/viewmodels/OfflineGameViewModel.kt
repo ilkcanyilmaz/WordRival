@@ -1,8 +1,9 @@
 package com.ilkcanyilmaz.wordrival.viewmodels
 
+import android.app.Application
 import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -10,8 +11,18 @@ import com.ilkcanyilmaz.wordrival.enums.UserType
 import com.ilkcanyilmaz.wordrival.models.Game
 import com.ilkcanyilmaz.wordrival.models.Question
 import com.ilkcanyilmaz.wordrival.models.User
+import com.ilkcanyilmaz.wordrival.repositories.FirestoreRepository
+import com.ilkcanyilmaz.wordrival.repositories.WordLocalDataSource
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class OfflineGameViewModel : ViewModel() {
+@HiltViewModel
+class OfflineGameViewModel @Inject constructor(
+    application: Application,
+    val firestoreRepository: FirestoreRepository,
+    val wordLocalDataSource: WordLocalDataSource
+) :
+    AndroidViewModel(application) {
     private val TAG = "DocSnippets"
 
     private var firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
@@ -31,9 +42,9 @@ class OfflineGameViewModel : ViewModel() {
 
             val objUser = snapshot?.toObject(User::class.java)
             if (userType == UserType.USER1.getTypeID()) {
-                user1.value = objUser
-            } else if (userType== UserType.USER2.getTypeID()) {
-                user2.value = objUser
+                user1.value = objUser!!
+            } else if (userType == UserType.USER2.getTypeID()) {
+                user2.value = objUser!!
             }
         }
     }
@@ -48,7 +59,7 @@ class OfflineGameViewModel : ViewModel() {
             }
 
             val objGame = snapshot?.toObject(Game::class.java)
-            gameDetail.value = objGame
+            gameDetail.value = objGame!!
         }
     }
 
@@ -71,7 +82,8 @@ class OfflineGameViewModel : ViewModel() {
                     doc.get("user1Answer").toString().toInt(),
                     doc.get("user2Answer").toString().toInt()
                 )*/
-                questions.value = objQuestion
+                questions.value = objQuestion!!
 
             }
-    }}
+    }
+}

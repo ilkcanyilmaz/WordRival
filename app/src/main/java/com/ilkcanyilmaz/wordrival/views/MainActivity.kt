@@ -9,8 +9,9 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.ilkcanyilmaz.wordrival.R
 import com.ilkcanyilmaz.wordrival.interfaces.IOnBackPressed
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
-
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
     private lateinit var navController: NavController
     private var a: Int = 0

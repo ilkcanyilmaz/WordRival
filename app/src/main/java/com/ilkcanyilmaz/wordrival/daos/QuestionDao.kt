@@ -12,6 +12,9 @@ interface QuestionDao {
     @Query("SELECT * FROM tbl_question")
     fun getQuestion(): List<Question>
 
+    @Query("SELECT * FROM tbl_question WHERE id IN (:filterValues)")
+    fun getQuestionsById(filterValues:List<String>): List<Question>
+
     /*  @Query("SELECT * FROM book where name LIKE  :name
               AND author LIKE :author")
           fun findByName(name: String, author: String): User*/

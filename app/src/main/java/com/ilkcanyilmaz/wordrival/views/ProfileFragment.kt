@@ -4,26 +4,28 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProviders
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.NavHostFragment
-import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.ilkcanyilmaz.wordrival.FirestoreOperation
 import com.ilkcanyilmaz.wordrival.R
-import com.ilkcanyilmaz.wordrival.databases.DatabaseManager
 import com.ilkcanyilmaz.wordrival.models.User
+import com.ilkcanyilmaz.wordrival.repositories.UserLocalDataSource
 import com.ilkcanyilmaz.wordrival.viewmodels.ProfileViewModel
-import kotlinx.android.synthetic.main.fragment_profile.*
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class ProfileFragment : NavHostFragment() {
-    lateinit var firestoreOperation: FirestoreOperation
     private var mAuth: FirebaseAuth
-    private lateinit var user: User
-    private lateinit var viewModel: ProfileViewModel
-    private lateinit var db: DatabaseManager
+    private var user: User? = null
+    private val viewModel: ProfileViewModel by viewModels()
+
+    @Inject
+    lateinit var userDataSource: UserLocalDataSource
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -41,26 +43,17 @@ class ProfileFragment : NavHostFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        init()
-       // Glide.with(requireContext()).load("https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=10218274302510824&height=200&width=200&ext=1606046973&hash=AeRZbtRLCP2-pUXff-0").into(img_facebookProfilePhoto);
-
-
+        // Glide.with(requireContext()).load("https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=10218274302510824&height=200&width=200&ext=1606046973&hash=AeRZbtRLCP2-pUXff-0").into(img_facebookProfilePhoto);
+        userDataSource.getUser {
+            user = it
+        }
         //LoadFriendsList()
-
     }
 
     init {
         mAuth = FirebaseAuth.getInstance()
         firestoreDb = Firebase.firestore
-        firestoreOperation = FirestoreOperation()
     }
 
-    fun init() {
-        db = context?.let { DatabaseManager.getDatabaseManager(it) }!!
-        viewModel = ViewModelProviders.of(this).get(
-            ProfileViewModel::class.java
-        )
-        user = db.userDao().getUser()
-    }
 
 }

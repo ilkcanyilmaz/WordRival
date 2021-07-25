@@ -15,20 +15,24 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.ilkcanyilmaz.wordrival.R
-import com.ilkcanyilmaz.wordrival.databases.DatabaseManager
 import com.ilkcanyilmaz.wordrival.models.Question
+import com.ilkcanyilmaz.wordrival.repositories.QuestionLocalDataSource
 import com.ilkcanyilmaz.wordrival.viewmodels.SplashActivityViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_splash.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class SplashActivity : AppCompatActivity() {
     private var mAuth: FirebaseAuth? = null
     private var user: FirebaseUser? = null
     var firestore = FirebaseFirestore.getInstance()
-    private lateinit var db: DatabaseManager
     private lateinit var viewModel: SplashActivityViewModel
+
+    @Inject
+    lateinit var questionDataSource: QuestionLocalDataSource
 
     init {
         mAuth = FirebaseAuth.getInstance()
@@ -36,7 +40,7 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun questionSync() {
-        db.questionDao().delete()
+        questionDataSource.deleteQuestion()
         Firebase.firestore.collection("Questions").get()
             .addOnSuccessListener { documents ->
                 if (documents.isEmpty) {
@@ -44,7 +48,8 @@ class SplashActivity : AppCompatActivity() {
                 } else {
                     for (document in documents) {
                         val objQuestion = document.toObject(Question::class.java)
-                        db.questionDao().insert(objQuestion)
+                        objQuestion.id = document.id
+                        questionDataSource.addQuestion(objQuestion)
                         /* dialog.ll_friend.visibility = View.VISIBLE
                          dialog.txt_userName.text = friend.userNickName
                          dialog.btn_addFriendRequest.setOnClickListener({
@@ -86,8 +91,8 @@ class SplashActivity : AppCompatActivity() {
         viewModel = ViewModelProviders.of(this).get(
             SplashActivityViewModel::class.java
         )
-        db = DatabaseManager.getDatabaseManager(context = applicationContext)!!
-        val localQuestionSize = db.questionDao().getQuestion().size
+        var localQuestionSize = 0
+        localQuestionSize = questionDataSource.getQuestion().size
 
         viewModel.getQuestionSize()
         viewModel.questionSize.observe(this) {

@@ -1,25 +1,40 @@
-package com.ilkcanyilmaz.wordrival
+package com.ilkcanyilmaz.wordrival.repositories
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.widget.Toast
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.iid.FirebaseInstanceId
-import com.google.firebase.ktx.Firebase
+import com.ilkcanyilmaz.wordrival.models.WordModel
 import com.ilkcanyilmaz.wordrival.views.MainActivity
+import dagger.hilt.android.AndroidEntryPoint
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import javax.inject.Inject
 
-class FirestoreOperation() {
+class FirestoreRepository @Inject constructor(private val context: Context) {
     private var firestore: FirebaseFirestore
     private val TAG = "GoogleActivity"
     private val userId: String
 
+
+
     init {
         userId = FirebaseAuth.getInstance().currentUser?.uid.toString()
-        firestore = Firebase.firestore
+        firestore = FirebaseFirestore.getInstance()
+    }
+
+    fun insertFavouriteWord(wordModel: WordModel) {
+        firestore.collection("Users").document(userId)
+            .collection("Words").document(wordModel.questionId)
+            .set(wordModel)
+            .addOnSuccessListener {
+                Log.d("TAG", "DocumentSnapshot successfully updated!")
+            }
     }
 
     fun insertNewUserFirestore(
@@ -30,7 +45,6 @@ class FirestoreOperation() {
         userPhoto: String,
         activity: Activity
     ) {
-
 
         FirebaseInstanceId.getInstance().instanceId
             .addOnCompleteListener(OnCompleteListener { task ->
@@ -71,7 +85,7 @@ class FirestoreOperation() {
 
     }
 
-    fun AddFriend(
+    fun addFriend(
         friendId: String,
         friendNickName: String,
         friendToken: String,

@@ -7,8 +7,6 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -32,13 +30,19 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.ilkcanyilmaz.wordrival.R
-import com.ilkcanyilmaz.wordrival.databases.DatabaseManager
 import com.ilkcanyilmaz.wordrival.models.User
+import com.ilkcanyilmaz.wordrival.repositories.UserLocalDataSource
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_login.*
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class LoginActivity : AppCompatActivity(), View.OnClickListener {
     private val TAG = "GoogleActivity"
     private val RC_SIGN_IN = 9001
+
+    @Inject
+    lateinit var userDataSource: UserLocalDataSource
 
     private var mAuth: FirebaseAuth? = null
     private var user: FirebaseUser? = null
@@ -85,7 +89,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                     transition: Transition<in Bitmap?>?
                 ) {
                     val bdrawable = BitmapDrawable(getResources(), resource)
-                    layout_login.background=bdrawable
+                    layout_login.background = bdrawable
                 }
             })
     }
@@ -126,7 +130,6 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                             if (!documents.isEmpty) {
                                 val intent = Intent(this@LoginActivity, MainActivity::class.java)
                                 startActivity(intent)
-                                val db: DatabaseManager? = DatabaseManager.getDatabaseManager(this)
                                 val mUser: User = User()
                                 for (document in documents) {
                                     mUser.userToken = document["userToken"].toString()
@@ -134,10 +137,10 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                                     mUser.userMail = document["userMail"].toString()
                                     mUser.userName = document["userFullName"].toString()
                                     mUser.userPhoto = document["userPhoto"].toString()
-                                    mUser.userId= mAuth!!.uid.toString()
+                                    mUser.userId = mAuth!!.uid.toString()
                                 }
-                                db?.userDao()?.delete(mUser)
-                                db?.userDao()?.insert(user = mUser)
+                                userDataSource.deleteUser(mUser)
+                                userDataSource.addUser(mUser)
                                 finish()
                             } else {
                                 val intent =
@@ -221,7 +224,6 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                             if (!documents.isEmpty) {
                                 val intent = Intent(this@LoginActivity, MainActivity::class.java)
                                 startActivity(intent)
-                                val db: DatabaseManager? = DatabaseManager.getDatabaseManager(this)
                                 val mUser: User = User()
                                 for (document in documents) {
                                     mUser.userToken = document["userToken"].toString()
@@ -231,8 +233,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                                     mUser.userPhoto = document["userPhoto"].toString()
                                     mUser.userId = mAuth!!.uid.toString()
                                 }
-                                db?.userDao()?.delete(mUser)
-                                db?.userDao()?.insert(user = mUser)
+                                userDataSource.deleteUser(mUser)
+                                userDataSource.addUser(mUser)
                                 finish()
                             } else {
                                 val intent =

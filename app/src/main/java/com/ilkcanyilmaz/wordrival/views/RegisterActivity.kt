@@ -11,7 +11,7 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
-import com.ilkcanyilmaz.wordrival.FirestoreOperation
+import com.ilkcanyilmaz.wordrival.repositories.FirestoreRepository
 import com.ilkcanyilmaz.wordrival.R
 import com.ilkcanyilmaz.wordrival.enums.RegisterType
 import kotlinx.android.synthetic.main.activity_register.*
@@ -20,14 +20,14 @@ import kotlinx.android.synthetic.main.activity_register.*
 class RegisterActivity : AppCompatActivity(), View.OnClickListener {
     private val TAG = "GoogleActivity"
     private var userPhoto = "1";
-    private lateinit var firestoreOperation: FirestoreOperation
+    private lateinit var firestoreRepository: FirestoreRepository
     private var registerType: RegisterType = RegisterType.MAIL
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
         LoadSpinner()
         btn_register.setOnClickListener(this)
-        firestoreOperation = FirestoreOperation()
+        firestoreRepository = FirestoreRepository(applicationContext)
         val userName = intent.getStringExtra("userName")
         val userMail = intent.getStringExtra("userMail")
         val photoUrl = intent.getStringExtra("userPhoto")
@@ -96,7 +96,7 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
             .addOnCompleteListener(object : OnCompleteListener<AuthResult> {
                 override fun onComplete(p0: Task<AuthResult>) {
                     if (p0.isSuccessful) {
-                        firestoreOperation.insertNewUserFirestore(
+                        firestoreRepository.insertNewUserFirestore(
                             edt_userMail.text.toString(),
                             edt_userNickName.text.toString(),
                             edt_userFullName.text.toString(),
@@ -114,7 +114,7 @@ class RegisterActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun RegisterWithGoogle() {
-        firestoreOperation.insertNewUserFirestore(
+        firestoreRepository.insertNewUserFirestore(
             edt_userMail.text.toString(),
             edt_userNickName.text.toString(),
             edt_userFullName.text.toString(),

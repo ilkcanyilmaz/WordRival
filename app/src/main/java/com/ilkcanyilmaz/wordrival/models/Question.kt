@@ -9,6 +9,9 @@ import com.google.firebase.firestore.PropertyName
 @Entity(tableName = "tbl_question")
 data class Question(
     @PrimaryKey
+    @ColumnInfo(name = "id")
+    @PropertyName("id")
+    var id: String = "",
     @ColumnInfo(name = "word")
     @PropertyName("word")
     var word: String = "",
