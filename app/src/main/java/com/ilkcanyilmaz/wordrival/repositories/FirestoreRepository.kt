@@ -8,7 +8,11 @@ import android.widget.Toast
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.ktx.Firebase
+import com.ilkcanyilmaz.wordrival.enums.UserType
+import com.ilkcanyilmaz.wordrival.models.User
 import com.ilkcanyilmaz.wordrival.models.WordModel
 import com.ilkcanyilmaz.wordrival.views.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -164,5 +168,15 @@ class FirestoreRepository @Inject constructor(private val context: Context) {
             .addOnFailureListener { e -> Log.w(TAG, "Error writing document", e) }
     }
 
+    fun getFavouriteWord(){
+        val docRef = Firebase.firestore.collection("Users").document(userId).collection("Words")
+        docRef.addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                Log.w(TAG, "Listen failed.", e)
+                return@addSnapshotListener
+            }
 
+            val objWord = snapshot?.toObjects(WordModel::class.java)
+        }
+    }
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <declare-styleable name="LevelView">
+    <attr name="enableLineColor" format="color" />
+    <attr name="disableLineColor" format="color" />
+    <attr name="borderWidth" format="dimension" />
+    <attr name="levelState" format="enum">
+      <enum name="level1" value="1" />
+      <enum name="level2" value="2" />
+      <enum name="level3" value="3" />
+      <enum name="level4" value="4" />
+      <enum name="level5" value="5" />
+
+    </attr>
+  </declare-styleable>
+</resources>

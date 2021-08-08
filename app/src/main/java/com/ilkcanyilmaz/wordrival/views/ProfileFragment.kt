@@ -31,7 +31,7 @@ class ProfileFragment : NavHostFragment() {
     }
 
     private val TAG = "DocSnippets"
-    private lateinit var firestoreDb: FirebaseFirestore
+    private var firestoreDb: FirebaseFirestore
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

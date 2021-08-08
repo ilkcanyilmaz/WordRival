@@ -59,7 +59,6 @@
                 android:background="#FFFDFB"
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -111,21 +110,6 @@
                     </LinearLayout>
                 </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/ll_online"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/_6sdp"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Rastgele bir kişi ile oyna" />
-
-                </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_learningWord"
@@ -203,6 +187,7 @@
                         android:text="Kabul Et"
                         android:textColor="@color/color_white" />
                 </LinearLayout>
+
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>
