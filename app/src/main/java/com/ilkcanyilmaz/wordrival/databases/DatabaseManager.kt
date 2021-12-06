@@ -13,7 +13,6 @@ import com.ilkcanyilmaz.wordrival.models.WordModel
 
 @Database(entities = [User::class, Friend::class, Question::class, WordModel::class], version = 1, exportSchema = false)
 abstract class DatabaseManager : RoomDatabase() {
-
     abstract fun userDao(): UserDao
     abstract fun friendDao(): FriendDao
     abstract fun questionDao(): QuestionDao

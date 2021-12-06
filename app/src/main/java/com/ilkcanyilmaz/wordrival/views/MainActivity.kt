@@ -3,6 +3,8 @@ package com.ilkcanyilmaz.wordrival.views
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
+import android.view.Window
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -17,9 +19,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     private var a: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        this.window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState)
         navController = findNavController(R.id.mainFragment)
         supportActionBar?.hide()
+        supportActionBar?.setHomeButtonEnabled(false)
         setupActionBarWithNavController(navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->

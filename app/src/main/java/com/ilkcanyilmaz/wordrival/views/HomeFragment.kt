@@ -4,6 +4,8 @@ import android.animation.ObjectAnimator
 import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.AsyncTask
 import android.os.Bundle
@@ -19,9 +21,16 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
+import androidx.viewpager2.widget.ViewPager2
+import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.bumptech.glide.Glide
 import com.github.aakira.expandablelayout.ExpandableLayoutListenerAdapter
 import com.github.aakira.expandablelayout.Utils
+import com.github.mikephil.charting.components.Legend
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.data.PieEntry
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
 import com.google.firebase.auth.FirebaseAuth
@@ -33,6 +42,7 @@ import com.google.firebase.ktx.Firebase
 import com.ilkcanyilmaz.wordrival.MyFirebaseInstanceIDService
 import com.ilkcanyilmaz.wordrival.R
 import com.ilkcanyilmaz.wordrival.adapters.FriendListAdapter
+import com.ilkcanyilmaz.wordrival.databinding.FragmentHomeBinding
 import com.ilkcanyilmaz.wordrival.enums.*
 import com.ilkcanyilmaz.wordrival.models.Friend
 import com.ilkcanyilmaz.wordrival.models.User
@@ -56,13 +66,14 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
     lateinit var firestoreRepository: FirestoreRepository
     private val BASE_URL = "https://fcm.googleapis.com/fcm/"
     private lateinit var viewModel: HomeViewModel
-    private var user: User?=null
+    private var user: User? = null
     val CHAR_SPLIT = "$!"
     private var requestGameId = ""
     var functions: FirebaseFunctions
     var gameDisplayType: GameDisplay = GameDisplay.ONLINE
     private var level: Level = Level.EASY
-
+    private var tf: Typeface? = null
+    private lateinit var binding:FragmentHomeBinding
     @Inject
     lateinit var userDataSource: UserLocalDataSource
 
@@ -70,9 +81,9 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false)
+        binding = FragmentHomeBinding.inflate(layoutInflater)
+        return binding.root
     }
 
     init {
@@ -92,7 +103,7 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
         btn_offline.setOnClickListener(this)
         val adRequest = AdRequest.Builder().build()
         adView.loadAd(adRequest)
-        btn_play.setOnClickListener(this)
+        //btn_play.setOnClickListener(this)
         btn_gameReject.setOnClickListener(this)
         btn_gameAccept.setOnClickListener(this)
         setLevelSpinner()
@@ -115,11 +126,38 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
                  //ConnectGame()
              }
          })*/
+
+        val viewPager2: ViewPager2 = view.findViewById(R.id.pager_home)
+        val list: MutableList<SlideModel> = ArrayList()
+        //drawable klasörünüze 3 adet resim yüklendiğini varsayıyoruz
+        list.add(SlideModel("Image Title 1", R.drawable.background_item))
+        list.add(SlideModel("Image Title 2", R.drawable.ic_checked))
+        list.add(SlideModel("Image Title 3", R.drawable.ic_again_blue))
+        viewPager2.adapter = SlidePagerAdapter(list, this)
+
+        //Değişim sağlandığında çalışan listener
+        viewPager2.registerOnPageChangeCallback(object : OnPageChangeCallback() {
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels)
+            }
+
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+            }
+
+            override fun onPageScrollStateChanged(state: Int) {
+                super.onPageScrollStateChanged(state)
+            }
+        })
     }
 
     private fun setLevelSpinner() {
         val values: Array<String> = arrayOf("Kolay", "Orta", "Zor")
-        txt_level.setOnClickListener {
+        /*txt_level.setOnClickListener {
             when (level) {
                 Level.EASY -> {
                     level = Level.NORMAL
@@ -134,7 +172,7 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
                     txt_level.text = values[0]
                 }
             }
-        }
+        }*/
 
     }
 
@@ -175,11 +213,11 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
             if (snapshot != null) {
                 if (snapshot.data != null) {
                     cv_gameRequest.visibility = View.VISIBLE
-                    cv_game.visibility = View.GONE
+                    //cv_game.visibility = View.GONE
                     requestGameId = snapshot.data!!["gameId"].toString()
                 } else {
                     cv_gameRequest.visibility = View.GONE
-                    cv_game.visibility = View.VISIBLE
+                    //cv_game.visibility = View.VISIBLE
                 }
             }
         }
@@ -374,9 +412,7 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
 
     override fun onDestroy() {
         super.onDestroy()
-
     }
-
 
     private fun updateUIGameDisplay() {
         when (gameDisplayType) {
@@ -430,11 +466,6 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
                         null
                     )
                 )
-
-                ll_online.visibility = View.VISIBLE
-                ll_offline.visibility = View.GONE
-
-
             }
 
             GameDisplay.OFFLINE -> {
@@ -484,8 +515,6 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
                     )
                 )
 
-                ll_online.visibility = View.GONE
-                ll_offline.visibility = View.VISIBLE
 
             }
         }
@@ -501,14 +530,13 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
                 gameDisplayType = GameDisplay.OFFLINE
                 updateUIGameDisplay()
             }
-
-            R.id.btn_play -> {
+            /*R.id.btn_play -> {
                 if (gameDisplayType == GameDisplay.ONLINE) {
                     startRandomGameActivity()
                 } else if (gameDisplayType == GameDisplay.OFFLINE) {
                     startOfflineGame()
                 }
-            }
+            }*/
             R.id.btn_gameReject -> {
                 firestore.collection("Users")
                     .document(mAuth.currentUser?.uid.toString())
@@ -706,6 +734,70 @@ class HomeFragment : Fragment(), FriendListAdapter.ItemListener,
             }
             return ""
         }
-
     }
+
+    private fun loadChart(mBatteryStatus: List<Int?>?) {
+        pieChart_totalGame.description.isEnabled = false
+        tf = ResourcesCompat.getFont(requireContext(), R.font.inter_medium)
+        pieChart_totalGame.setCenterTextTypeface(tf)
+        pieChart_totalGame.centerText = mBatteryStatus!!.size.toString() + " Toplam Oyun"
+        pieChart_totalGame.setCenterTextSize(10f)
+        pieChart_totalGame.setCenterTextTypeface(tf)
+        pieChart_totalGame.legend.textColor = Color.WHITE
+        pieChart_totalGame.legend.textSize = 14f
+        // radius of the center hole in percent of maximum radius
+        pieChart_totalGame.holeRadius = 60f
+        pieChart_totalGame.transparentCircleRadius = 30f
+        val l = pieChart_totalGame.legend
+        l.verticalAlignment = Legend.LegendVerticalAlignment.TOP
+        l.horizontalAlignment = Legend.LegendHorizontalAlignment.RIGHT
+        l.orientation = Legend.LegendOrientation.VERTICAL
+        l.setDrawInside(false)
+        pieChart_totalGame.data = generatePieData(mBatteryStatus)
+    }
+
+    private fun generatePieData(statisticsData: List<Int?>?): PieData {
+        val full = 0f
+        val middle = 0f
+        val critical = 0f
+        /*for (i in mBatteryStatus!!.indices) {
+            val bateryPercent = mBatteryStatus[i]?.batteryPercentage?.replace("%", "")?.toInt()
+            when {
+                bateryPercent!! < 40 -> {
+                    critical++
+                }
+                bateryPercent < 70 -> {
+                    middle++
+                }
+                else -> {
+                    full++
+                }
+            }
+        }*/
+        val entries1 = java.util.ArrayList<PieEntry>()
+        entries1.add(PieEntry(full, "Dolu"))
+        entries1.add(PieEntry(middle, "Orta"))
+        entries1.add(PieEntry(critical, "Kritik"))
+        val ds1 = PieDataSet(entries1, "")
+        try {
+            //ds1.setColors(PieChartColor)
+        } catch (e: Exception) {
+
+        }
+        ds1.sliceSpace = 2f
+        ds1.selectionShift = 18f
+        ds1.valueTextColor = Color.WHITE
+        ds1.valueTextSize = 12f
+        ds1.valueFormatter = object : ValueFormatter() {
+            override fun getFormattedValue(v: Float): String {
+                return v.toInt().toString()
+            }
+        }
+        val d = PieData(ds1)
+        d.setValueTypeface(tf)
+        return d
+    }
+
 }
+
+class SlideModel(var title: String, var imageID: Int)

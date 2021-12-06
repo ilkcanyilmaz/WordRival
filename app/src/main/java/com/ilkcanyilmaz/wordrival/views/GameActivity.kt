@@ -130,7 +130,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
             startActivity(intent)
         }
         endGameResponse()
-        viewModel.gameDetail.observe(this, { game ->
+        viewModel.gameDetail.observe(this) { game ->
             game.let {
                 if (game.user1Time > 0 && game.user2Time > 0) {
                     dialog.rv_users.visibility = View.VISIBLE
@@ -158,7 +158,7 @@ class GameActivity : AppCompatActivity(), View.OnClickListener {
                     }
                 }
             }
-        })
+        }
         MobileAds.initialize(applicationContext)
 
         val adRequest = AdRequest.Builder().build()

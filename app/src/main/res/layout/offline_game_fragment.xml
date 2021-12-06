@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FEFAE0"
+    android:background="@drawable/gradient_color_primary_background"
     android:orientation="vertical"
     tools:context=".views.GameActivity">
 
@@ -17,15 +17,13 @@
         android:layout_gravity="center"
         android:layout_marginStart="48dp"
         android:layout_marginEnd="48dp"
+        android:layout_marginTop="24dp"
         app:cardCornerRadius="12dp"
         app:cardElevation="6dp"
-        app:layout_constraintBottom_toBottomOf="@+id/frameLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintLeft_toLeftOf="@+id/frameLayout"
-        app:layout_constraintRight_toRightOf="@+id/frameLayout"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/frameLayout"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
 
         >
 
@@ -50,25 +48,17 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <FrameLayout
-        android:id="@+id/frameLayout"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_120sdp"
-        android:background="#209EBB"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
 
-    </FrameLayout>
 
     <RelativeLayout
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_48sdp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/cardView2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/frameLayout"
+        app:layout_constraintTop_toTopOf="parent"
         android:layout_margin="@dimen/_12sdp">
 
 
@@ -93,9 +83,9 @@
             android:id="@+id/txt_score"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
             android:fontFamily="@font/inter_bold"
             android:gravity="center"
-            android:layout_centerInParent="true"
             android:text="0"
             android:textColor="@color/color_white"
             android:textSize="@dimen/_32ssp" />

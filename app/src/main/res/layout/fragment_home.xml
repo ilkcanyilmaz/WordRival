@@ -5,287 +5,264 @@
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="#E5E5E5">
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appBar"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_80sdp">
-
+            android:layout_height="@dimen/_180sdp"
+            android:background="#E5E5E5"
+            app:elevation="0dp">
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:id="@+id/toolbarlayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/colorAccent">
+                android:background="@drawable/gradient_color_primary_background">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center|top"
-                    android:layout_marginTop="@dimen/_12sdp"
-                    android:fontFamily="@font/inter_medium"
-                    android:text="@string/app_name"
-                    android:textColor="@color/color_white"
-                    android:textSize="@dimen/_18ssp" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="@dimen/_12sdp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center|top"
+                        android:fontFamily="@font/inter_medium"
+                        android:text="@string/app_name"
+                        android:textColor="@color/color_white"
+                        android:textSize="@dimen/_18ssp" />
+
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/pager_home"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_98sdp"
+                        android:layout_marginTop="@dimen/_8sdp" />
+                    <!--
+                                        <LinearLayout
+                                            android:id="@+id/ll_offline"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="@dimen/_98sdp"
+                                            android:layout_marginTop="@dimen/_8sdp"
+                                            android:orientation="horizontal"
+                                            android:visibility="visible">
+
+                                            <androidx.cardview.widget.CardView
+                                                android:layout_width="0dp"
+                                                android:layout_height="match_parent"
+                                                android:layout_weight="0.8"
+                                                app:cardCornerRadius="@dimen/_8sdp">
+
+                                                <LinearLayout
+                                                    android:layout_width="match_parent"
+                                                    android:layout_height="match_parent"
+                                                    android:background="@drawable/shape_spinner_border"
+                                                    android:gravity="center_horizontal"
+                                                    android:orientation="vertical"
+                                                    android:paddingBottom="@dimen/_8sdp">
+
+                                                    <FrameLayout
+                                                        android:id="@+id/img_background"
+                                                        android:layout_width="match_parent"
+                                                        android:layout_height="wrap_content"
+                                                        android:background="@drawable/shape_half_circle_friend_item">
+
+                                                        <TextView
+                                                            android:id="@+id/txt_userRecord"
+                                                            android:layout_width="wrap_content"
+                                                            android:layout_height="wrap_content"
+                                                            android:layout_gravity="center|top"
+                                                            android:layout_marginVertical="@dimen/_6sdp"
+                                                            android:gravity="center"
+                                                            android:text="Senin \n Rekorun"
+                                                            android:textColor="@color/color_white" />
+                                                    </FrameLayout>
+
+
+                                                    <TextView
+                                                        android:id="@+id/txt_friendName"
+                                                        android:layout_width="wrap_content"
+                                                        android:layout_height="match_parent"
+                                                        android:layout_marginTop="@dimen/_2sdp"
+                                                        android:fontFamily="@font/inter_bold"
+                                                        android:gravity="center"
+                                                        android:text="60"
+                                                        android:textColor="@color/colorAccent"
+                                                        android:textSize="24sp"
+                                                        android:textStyle="bold" />
+
+
+                                                    <LinearLayout
+                                                        android:id="@+id/ll_friendRequest"
+                                                        android:layout_width="match_parent"
+                                                        android:layout_height="wrap_content"
+                                                        android:layout_gravity="center"
+                                                        android:layout_marginTop="@dimen/_4sdp"
+                                                        android:gravity="bottom|center_horizontal"
+                                                        android:orientation="horizontal"
+                                                        android:visibility="gone">
+
+                                                        <ImageButton
+                                                            android:id="@+id/btn_cancel"
+                                                            android:layout_width="@dimen/_24sdp"
+                                                            android:layout_height="@dimen/_24sdp"
+                                                            android:background="@drawable/ic_cancel"
+                                                            android:contentDescription="cancel_friendRequest"
+                                                            android:scaleType="centerCrop" />
+
+                                                        <ImageButton
+                                                            android:id="@+id/btn_accept"
+                                                            android:layout_width="@dimen/_24sdp"
+                                                            android:layout_height="@dimen/_24sdp"
+                                                            android:layout_marginStart="@dimen/_8sdp"
+                                                            android:background="@drawable/ic_checked"
+                                                            android:contentDescription="accept_friendRequest"
+                                                            android:scaleType="centerCrop" />
+                                                    </LinearLayout>
+
+                                                </LinearLayout>
+                                            </androidx.cardview.widget.CardView>
+
+                                            <androidx.cardview.widget.CardView
+                                                android:layout_width="0dp"
+                                                android:layout_height="wrap_content"
+                                                android:layout_gravity="center"
+                                                android:layout_marginHorizontal="@dimen/_12sdp"
+                                                android:layout_weight="1"
+                                                app:cardElevation="@dimen/_2sdp"
+                                                app:cardCornerRadius="@dimen/_32sdp">
+
+                                                &lt;!&ndash;<LinearLayout
+                                                    android:layout_width="match_parent"
+                                                    android:layout_height="match_parent"
+                                                    android:layout_gravity="center"
+                                                    android:background="#fff"
+                                                    android:orientation="horizontal">
+
+                                                    <ImageView
+                                                        android:layout_width="@dimen/_32sdp"
+                                                        android:layout_height="@dimen/_32sdp"
+                                                        android:background="@drawable/ic_play" />
+
+                                                    <TextView
+                                                        android:layout_width="wrap_content"
+                                                        android:layout_height="wrap_content"
+                                                        android:layout_gravity="center"
+                                                        android:layout_marginStart="@dimen/_4sdp"
+                                                        android:fontFamily="@font/inter_medium"
+                                                        android:gravity="center"
+                                                        android:text="Yeni Oyun"
+                                                        android:textSize="@dimen/_10ssp" />
+
+                                                </LinearLayout>&ndash;&gt;
+                                            </androidx.cardview.widget.CardView>
+
+
+                                            <androidx.cardview.widget.CardView
+                                                android:layout_width="0dp"
+                                                android:layout_height="match_parent"
+                                                android:layout_weight="0.8"
+                                                app:cardCornerRadius="@dimen/_8sdp">
+
+                                                <LinearLayout
+                                                    android:layout_width="match_parent"
+                                                    android:layout_height="match_parent"
+                                                    android:background="@drawable/shape_spinner_border"
+                                                    android:gravity="center_horizontal"
+                                                    android:orientation="vertical"
+                                                    android:paddingBottom="@dimen/_8sdp">
+
+                                                    <FrameLayout
+                                                        android:layout_width="match_parent"
+                                                        android:layout_height="wrap_content"
+                                                        android:background="@drawable/shape_half_circle_friend_item">
+
+
+                                                        <TextView
+                                                            android:id="@+id/txt_wordRecord"
+                                                            android:layout_width="wrap_content"
+                                                            android:layout_height="wrap_content"
+                                                            android:layout_gravity="center|top"
+                                                            android:layout_marginVertical="@dimen/_6sdp"
+                                                            android:gravity="center"
+                                                            android:text="Dünya\nRekoru"
+                                                            android:textColor="@color/color_white" />
+                                                    </FrameLayout>
+
+
+                                                    <TextView
+                                                        android:id="@+id/txt_recor"
+                                                        android:layout_width="wrap_content"
+                                                        android:layout_height="match_parent"
+                                                        android:layout_marginTop="@dimen/_2sdp"
+                                                        android:fontFamily="@font/inter_bold"
+                                                        android:gravity="center"
+                                                        android:text="60"
+                                                        android:textColor="@color/colorAccent"
+                                                        android:textSize="24sp"
+                                                        android:textStyle="bold" />
+
+
+                                                </LinearLayout>
+                                            </androidx.cardview.widget.CardView>
+
+                                        </LinearLayout>
+                    -->
+                </LinearLayout>
 
             </com.google.android.material.appbar.CollapsingToolbarLayout>
 
         </com.google.android.material.appbar.AppBarLayout>
 
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btn_play"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/icon_play_arrow"
-            app:layout_anchor="@id/cv_game"
-            app:layout_anchorGravity="bottom|center" />
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cv_game"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_marginLeft="@dimen/_14sdp"
-            android:layout_marginTop="@dimen/_48sdp"
-            android:layout_marginRight="@dimen/_14sdp"
-            app:cardCornerRadius="@dimen/_12sdp"
-            app:cardElevation="4dp"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_marginHorizontal="@dimen/_24sdp"
+            android:baselineAligned="false"
+            android:orientation="horizontal"
+            android:translationZ="12dp"
             app:layout_anchor="@id/appBar"
             app:layout_anchorGravity="bottom|center">
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#F5F6F8"
-                android:gravity="center_horizontal"
-                android:orientation="vertical">
+                android:id="@+id/btn_online"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_weight="1"
+                android:background="@drawable/shape_offlinegamebutton"
+                android:gravity="center"
+                android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/txt_headerOnline"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/_6sdp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/_40sdp"
-                        android:baselineAligned="false"
-                        android:orientation="horizontal">
-
-                        <LinearLayout
-                            android:id="@+id/btn_online"
-                            android:layout_width="0dp"
-                            android:layout_height="@dimen/_40sdp"
-                            android:layout_weight="1"
-                            android:background="@drawable/shape_offlinegamebutton"
-                            android:gravity="center"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/txt_headerOnline"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/inter_medium"
-                                android:text="Online" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:id="@+id/btn_offline"
-                            android:layout_width="0dp"
-                            android:layout_height="@dimen/_40sdp"
-                            android:layout_weight="1"
-                            android:background="@drawable/shape_onlinegamebutton"
-                            android:gravity="center"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:id="@+id/txt_headerOffline"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/inter_medium"
-                                android:text="Offline"
-                                android:textColor="@color/color_white" />
-                        </LinearLayout>
-
-                    </LinearLayout>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/ll_online"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/_6sdp"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Rastgele bir kişi ile oyna" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/ll_offline"
-                    android:layout_width="match_parent"
-                    android:layout_height="132dp"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/_6sdp"
-                    android:visibility="visible">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="@drawable/shape_spinner_border"
-                        android:gravity="center_horizontal"
-                        android:orientation="vertical"
-                        android:paddingBottom="@dimen/_8sdp">
-
-                        <FrameLayout
-                            android:id="@+id/img_background"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/shape_half_circle_friend_item">
-
-
-                            <TextView
-                                android:id="@+id/txt_userRecord"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center|top"
-                                android:layout_marginVertical="@dimen/_6sdp"
-                                android:gravity="center"
-                                android:text="Senin \n Rekorun"
-                                android:textColor="@color/color_white" />
-                        </FrameLayout>
-
-
-                        <TextView
-                            android:id="@+id/txt_friendName"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_2sdp"
-                            android:gravity="center"
-                            android:hint="İlkcan Yılmaz"
-                            android:text="60"
-                            android:textColor="#1E1E1E"
-                            android:textSize="24sp"
-                            android:textStyle="bold" />
-
-
-                        <LinearLayout
-                            android:id="@+id/ll_friendRequest"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginTop="@dimen/_4sdp"
-                            android:gravity="bottom|center_horizontal"
-                            android:orientation="horizontal"
-                            android:visibility="gone">
-
-                            <ImageButton
-                                android:id="@+id/btn_cancel"
-                                android:layout_width="@dimen/_24sdp"
-                                android:layout_height="@dimen/_24sdp"
-                                android:background="@drawable/ic_cancel"
-                                android:contentDescription="cancel_friendRequest"
-                                android:scaleType="centerCrop" />
-
-                            <ImageButton
-                                android:id="@+id/btn_accept"
-                                android:layout_width="@dimen/_24sdp"
-                                android:layout_height="@dimen/_24sdp"
-                                android:layout_marginStart="@dimen/_8sdp"
-                                android:background="@drawable/ic_checked"
-                                android:contentDescription="accept_friendRequest"
-                                android:scaleType="centerCrop" />
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:layout_gravity="center"
-                        android:layout_weight="1.6"
-                        android:gravity="center"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="@dimen/_12sdp"
-                            android:background="@drawable/shape_level_header"
-                            android:fontFamily="@font/inter_medium"
-                            android:gravity="center"
-                            android:padding="4dp"
-                            android:text="Seviye"
-                            android:textColor="@color/color_white" />
-
-
-                        <TextView
-                            android:id="@+id/txt_level"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:padding="12dp"
-                            android:layout_marginHorizontal="@dimen/_12sdp"
-                            android:background="@drawable/shape_level_content"
-                            android:fontFamily="@font/inter_bold"
-                            android:gravity="center"
-                            android:text="Başlangıç"
-                            android:textColor="@color/colorAccent" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_alignParentEnd="true"
-                        android:layout_weight="1"
-                        android:background="@drawable/shape_spinner_border"
-                        android:gravity="center_horizontal"
-                        android:orientation="vertical"
-                        android:paddingBottom="@dimen/_8sdp">
-
-                        <FrameLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/shape_half_circle_friend_item">
-
-
-                            <TextView
-                                android:id="@+id/txt_wordRecord"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center|top"
-                                android:layout_marginVertical="@dimen/_6sdp"
-                                android:gravity="center"
-                                android:text="Dünya \n Rekoru"
-                                android:textColor="@color/color_white" />
-                        </FrameLayout>
-
-
-                        <TextView
-                            android:id="@+id/txt_recor"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_2sdp"
-                            android:gravity="center"
-                            android:text="60"
-                            android:textColor="#1E1E1E"
-                            android:textSize="24sp"
-                            android:textStyle="bold" />
-
-
-                    </LinearLayout>
-                </LinearLayout>
+                    android:fontFamily="@font/inter_medium"
+                    android:text="Online" />
             </LinearLayout>
 
-        </androidx.cardview.widget.CardView>
+            <LinearLayout
+                android:id="@+id/btn_offline"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_weight="1"
+                android:background="@drawable/shape_onlinegamebutton"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/txt_headerOffline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_medium"
+                    android:text="Offline"
+                    android:textColor="@color/color_white" />
+            </LinearLayout>
+
+        </LinearLayout>
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cv_gameRequest"
@@ -360,6 +337,7 @@
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@drawable/home_background"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
 
@@ -367,7 +345,47 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:paddingTop="@dimen/_160sdp">
+                android:paddingTop="@dimen/_32sdp">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_120sdp"
+                    android:layout_margin="@dimen/_12sdp"
+                    app:cardBackgroundColor="@color/color_white"
+                    app:cardCornerRadius="@dimen/_12sdp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/txtHeaderStatistics"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/_8sdp"
+                            android:fontFamily="@font/inter_bold"
+                            android:text="İstatistikler"
+                            android:textSize="@dimen/_12ssp"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/txtHeaderStatistics">
+
+                            <com.github.mikephil.charting.charts.PieChart
+                                android:id="@+id/pieChart_totalGame"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -582,5 +600,7 @@
             android:layout_gravity="bottom|center_horizontal"
             ads:adSize="BANNER"
             ads:adUnitId="ca-app-pub-3940256099942544/6300978111" />
+
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

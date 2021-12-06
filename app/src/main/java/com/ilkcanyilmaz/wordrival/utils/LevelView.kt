@@ -11,8 +11,8 @@ import com.ilkcanyilmaz.wordrival.R
 class LevelView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
     companion object {
-        private const val DEFAULT_ENABLE_COLOR = Color.GREEN
-        private const val DEFAULT_DISABLE_COLOR = Color.BLACK
+        private val DEFAULT_ENABLE_COLOR =  Color.rgb(69,123,157)
+        private val DEFAULT_DISABLE_COLOR = Color.rgb(142,142,142)
         private const val DEFAULT_BORDER_WIDTH = 1.0f
 
         const val LEVEL1 = 1L
@@ -22,7 +22,7 @@ class LevelView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
         const val LEVEL5 = 5L
     }
 
-    private var enableColor = DEFAULT_ENABLE_COLOR
+    private var enableColor = Color.rgb(69,123,157)
     private var disableColor = DEFAULT_DISABLE_COLOR
     private var borderWidth = DEFAULT_BORDER_WIDTH
 
@@ -70,40 +70,47 @@ class LevelView(context: Context?, attrs: AttributeSet?) : View(context, attrs) 
 
         when (levelState) {
             LEVEL1 -> {
-                drawlevelLine(canvas, 0.28f, 0.18f,true)
-                drawlevelLine(canvas, 0.42f, 0.32f,false)
-                drawlevelLine(canvas, 0.56f, 0.46f,false)
-                drawlevelLine(canvas, 0.70f, 0.60f,false)
-                drawlevelLine(canvas, 0.84f, 0.74f,false)
+                drawLevelLine(canvas, 0.28f, 0.18f,true)
+                drawLevelLine(canvas, 0.42f, 0.32f,false)
+                drawLevelLine(canvas, 0.56f, 0.46f,false)
+                drawLevelLine(canvas, 0.70f, 0.60f,false)
+                drawLevelLine(canvas, 0.84f, 0.74f,false)
 
             }
             LEVEL2 -> {
-                drawlevelLine(canvas, 0.28f, 0.18f,true)
-                drawlevelLine(canvas, 0.42f, 0.32f,true)
-                drawlevelLine(canvas, 0.56f, 0.46f,false)
-                drawlevelLine(canvas, 0.70f, 0.60f,false)
-                drawlevelLine(canvas, 0.84f, 0.74f,false)
+                drawLevelLine(canvas, 0.28f, 0.18f,true)
+                drawLevelLine(canvas, 0.42f, 0.32f,true)
+                drawLevelLine(canvas, 0.56f, 0.46f,false)
+                drawLevelLine(canvas, 0.70f, 0.60f,false)
+                drawLevelLine(canvas, 0.84f, 0.74f,false)
             }
             LEVEL3 -> {
-                drawlevelLine(canvas, 0.28f, 0.18f,true)
-                drawlevelLine(canvas, 0.42f, 0.32f,true)
-                drawlevelLine(canvas, 0.56f, 0.46f,true)
-                drawlevelLine(canvas, 0.70f, 0.60f,false)
-                drawlevelLine(canvas, 0.84f, 0.74f,false)
+                drawLevelLine(canvas, 0.28f, 0.18f,true)
+                drawLevelLine(canvas, 0.42f, 0.32f,true)
+                drawLevelLine(canvas, 0.56f, 0.46f,true)
+                drawLevelLine(canvas, 0.70f, 0.60f,false)
+                drawLevelLine(canvas, 0.84f, 0.74f,false)
             }
             LEVEL4 -> {
-                drawlevelLine(canvas, 0.28f, 0.18f,true)
-                drawlevelLine(canvas, 0.42f, 0.32f,true)
-                drawlevelLine(canvas, 0.56f, 0.46f,true)
-                drawlevelLine(canvas, 0.70f, 0.60f,true)
-                drawlevelLine(canvas, 0.84f, 0.74f,false)
+                drawLevelLine(canvas, 0.28f, 0.18f,true)
+                drawLevelLine(canvas, 0.42f, 0.32f,true)
+                drawLevelLine(canvas, 0.56f, 0.46f,true)
+                drawLevelLine(canvas, 0.70f, 0.60f,true)
+                drawLevelLine(canvas, 0.84f, 0.74f,false)
+            }
+            LEVEL5 -> {
+                drawLevelLine(canvas, 0.28f, 0.18f,true)
+                drawLevelLine(canvas, 0.42f, 0.32f,true)
+                drawLevelLine(canvas, 0.56f, 0.46f,true)
+                drawLevelLine(canvas, 0.70f, 0.60f,true)
+                drawLevelLine(canvas, 0.84f, 0.74f,true)
             }
         }
         //drawEyes(canvas)
         //drawMouth(canvas)
     }
 
-    private fun drawlevelLine(canvas: Canvas, left: Float, right: Float, lineEnable:Boolean) {
+    private fun drawLevelLine(canvas: Canvas, left: Float, right: Float, lineEnable:Boolean) {
         val corners = floatArrayOf(
             40f, 40f,   // Top left radius in px
             40f, 40f,   // Top right radius in px

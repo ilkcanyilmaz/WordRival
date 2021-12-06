@@ -37,11 +37,12 @@ class SplashActivity : AppCompatActivity() {
     init {
         mAuth = FirebaseAuth.getInstance()
         user = mAuth!!.currentUser
+        firestore= FirebaseFirestore.getInstance()
     }
 
     private fun questionSync() {
         questionDataSource.deleteQuestion()
-        Firebase.firestore.collection("Questions").get()
+        firestore.collection("Questions").get()
             .addOnSuccessListener { documents ->
                 if (documents.isEmpty) {
                     Log.w("FirebaseQuestionData", "Empty")

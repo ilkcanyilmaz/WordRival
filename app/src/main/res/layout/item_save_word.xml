@@ -25,7 +25,6 @@
             android:layout_height="@dimen/_36sdp"
             android:background="@drawable/ic_sound" />
 
-
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -60,6 +59,6 @@
         <com.ilkcanyilmaz.wordrival.utils.LevelView
             android:layout_width="@dimen/_36sdp"
             android:layout_height="@dimen/_36sdp"
-            app:levelState="level1"/>
+            app:levelState="level5"/>
     </LinearLayout>
 </androidx.cardview.widget.CardView>
